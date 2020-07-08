@@ -49,8 +49,8 @@ export class FSMTokenizer extends TokenizerBase {
 	protected removeComments = false;
 	protected cCommentDelimiter = '#';
 	private readonly table = new Map<string, number>();
-	private str: string = ''; // The string to be tokenized.
-	private sbToken: string = '';
+	private str = ''; // The string to be tokenized.
+	private sbToken = '';
 	private lineNum = 1; // Current line number
 	private colNum = 1; // Current column number
 	private charNum = 0; // Current index into str
