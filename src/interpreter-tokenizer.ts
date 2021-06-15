@@ -23,10 +23,7 @@ export class InterpreterTokenizer extends TokenizerBase {
 	private markQuotedTokens = false; // For use in LISP and Scheme (and SASL?) macro support.
 	private lastTokenWasASingleQuote = false;
 	private quotedBracketDepth = 0;
-	private readonly dictQuoteDelimiterToTokenType = new Map<
-		string,
-		number
-	>();
+	private readonly dictQuoteDelimiterToTokenType = new Map<string, number>();
 	private commentDelimiter = ';';
 
 	constructor(gs: number) {
@@ -75,10 +72,7 @@ export class InterpreterTokenizer extends TokenizerBase {
 			);
 			this.dictCharToTokenType.set('|', LexicalState.tokenOrBar);
 			this.dictCharToTokenType.set(';', LexicalState.tokenSemicolon);
-			this.dictCharToTokenType.set(
-				'{',
-				LexicalState.tokenLeftCurlyBrace
-			);
+			this.dictCharToTokenType.set('{', LexicalState.tokenLeftCurlyBrace);
 			this.dictCharToTokenType.set(
 				'}',
 				LexicalState.tokenRightCurlyBrace
@@ -106,10 +100,7 @@ export class InterpreterTokenizer extends TokenizerBase {
 				']',
 				LexicalState.tokenRightSquareBracket
 			);
-			this.dictCharToTokenType.set(
-				'{',
-				LexicalState.tokenLeftCurlyBrace
-			);
+			this.dictCharToTokenType.set('{', LexicalState.tokenLeftCurlyBrace);
 			this.dictCharToTokenType.set(
 				'}',
 				LexicalState.tokenRightCurlyBrace
@@ -289,7 +280,8 @@ export class InterpreterTokenizer extends TokenizerBase {
 			const tokenAsString = this.sbToken;
 
 			const regexInteger = /^(0|-?[1-9][0-9]*)$/;
-			const regexFloatingPointNumber = /^((0\.0)|(-?(0|[1-9][0-9]*)\.[0-9]*[1-9])|(-?[1-9][0-9]*\.[0-9]+))$/;
+			const regexFloatingPointNumber =
+				/^((0\.0)|(-?(0|[1-9][0-9]*)\.[0-9]*[1-9])|(-?[1-9][0-9]*\.[0-9]+))$/;
 
 			const tokenAsInteger = parseInt(tokenAsString, 10);
 			const tokenIsInteger =
@@ -368,10 +360,7 @@ export class InterpreterTokenizer extends TokenizerBase {
 				dictCharToTokenTypeX.set('<', LexicalState.tokenLess);
 				dictCharToTokenTypeX.set('<=', LexicalState.tokenLessEqual);
 				dictCharToTokenTypeX.set('>', LexicalState.tokenGreater);
-				dictCharToTokenTypeX.set(
-					'>=',
-					LexicalState.tokenGreaterEqual
-				);
+				dictCharToTokenTypeX.set('>=', LexicalState.tokenGreaterEqual);
 				dictCharToTokenTypeX.set(';', LexicalState.tokenSemicolon);
 				dictCharToTokenTypeX.set(',', LexicalState.tokenComma);
 				dictCharToTokenTypeX.set('||', LexicalState.token2OrBar);
@@ -395,18 +384,14 @@ export class InterpreterTokenizer extends TokenizerBase {
 				);
 				dictCharToTokenTypeX.set('|', LexicalState.tokenOrBar);
 				dictCharToTokenTypeX.set(':', LexicalState.tokenColon);
-				dictCharToTokenTypeX.set(
-					'{',
-					LexicalState.tokenLeftCurlyBrace
-				);
+				dictCharToTokenTypeX.set('{', LexicalState.tokenLeftCurlyBrace);
 				dictCharToTokenTypeX.set(
 					'}',
 					LexicalState.tokenRightCurlyBrace
 				);
 
-				const possibleTokenType = dictCharToTokenTypeX.get(
-					tokenAsString
-				);
+				const possibleTokenType =
+					dictCharToTokenTypeX.get(tokenAsString);
 
 				if (possibleTokenType !== undefined) {
 					result.tokenType = possibleTokenType as number;

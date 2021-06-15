@@ -8,7 +8,7 @@ import {
 	LexicalAnalyzerSelector,
 	LexicalState,
 	Token
-} from '../lib/main';
+} from '..';
 
 // function testToken(token: engine.Token, tokenType: number, tokenValue: any, lineNumber: number, columnNumber: number, isQuoted: boolean) {
 // 	expect(token.tokenType).toBe(tokenType);

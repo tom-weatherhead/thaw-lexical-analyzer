@@ -2,11 +2,7 @@
 
 'use strict';
 
-import {
-	createTokenizer,
-	LanguageSelector,
-	LexicalAnalyzerSelector
-} from '../lib/main';
+import { createTokenizer, LanguageSelector, LexicalAnalyzerSelector } from '..';
 
 test('Create Lisp tokenizer', () => {
 	// Arrange

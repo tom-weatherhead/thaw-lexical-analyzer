@@ -90,11 +90,7 @@ export class FSMTokenizer extends TokenizerBase {
 			'*',
 			LexicalState.tokenMult
 		);
-		this.addTransition(
-			LexicalState.stateStart,
-			'/',
-			LexicalState.tokenDiv
-		);
+		this.addTransition(LexicalState.stateStart, '/', LexicalState.tokenDiv);
 		this.addTransition(
 			LexicalState.stateStart,
 			'+',
@@ -219,11 +215,7 @@ export class FSMTokenizer extends TokenizerBase {
 		this.charNum = 0;
 	}
 
-	protected addTransition(
-		oldState: number,
-		char: string,
-		newState: number
-	) {
+	protected addTransition(oldState: number, char: string, newState: number) {
 		const tableKey = makeTokenizerTableKey(oldState, char);
 
 		// if (Object.keys(this.table).includes(tableKey)) {
@@ -300,12 +292,12 @@ export class FSMTokenizer extends TokenizerBase {
 				cSimplified = c;
 			}
 
-			const possibleCompletedState = this.dictInternalStringStateToCompletedState.get(
-				s
-			);
+			const possibleCompletedState =
+				this.dictInternalStringStateToCompletedState.get(s);
 			const possibleCompletedStateIsAState =
 				possibleCompletedState !== undefined;
-			const possibleCompletedStateAsAState = possibleCompletedState as number;
+			const possibleCompletedStateAsAState =
+				possibleCompletedState as number;
 
 			if (
 				s !== LexicalState.stateStart &&
@@ -458,9 +450,7 @@ export class FSMTokenizer extends TokenizerBase {
 				break;
 
 			case LexicalState.tokenStrLit:
-				tokenValue = this.getStrLitFromTokenStr(
-					this.cStringDelimiter
-				);
+				tokenValue = this.getStrLitFromTokenStr(this.cStringDelimiter);
 				break;
 
 			case LexicalState.tokenEOF:
