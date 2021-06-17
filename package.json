@@ -32,12 +32,11 @@
 		"test": "test"
 	},
 	"scripts": {
-		"all": "npm run travis && npm pack && npm run deploy",
+		"all": "npm run rebuild-online && npm pack && npm run deploy",
 		"// allw": "rmdir /Q /S coverage & rmdir /Q /S dist & npm run lint & npm run prettiercheck & npm run build & npm test & npm pack & move /Y thaw-lexical-analyzer-*.tgz C:\\git\\npm-packages\\",
-		"travis": "npm run rebuild-online",
 		"rebuild-offline": "npm run clean-offline && npm run build-and-test",
 		"clean-build-products": "rm -rf coverage && rm -rf dist",
-		"rebuild-online": "npm run clean-online && npm i && npm run build-and-test",
+		"rebuild-online": "npm run clean && npm i && npm run build-and-test",
 		"clean-packages": "rm -rf node_modules && rm -f package-lock.json",
 		"clean": "npm run clean-build-products && npm run clean-packages",
 		"build-and-test": "npm run prettier-check && npm run lint && npm run build && npm run rollup && npm test",
@@ -80,11 +79,14 @@
 		"typescript": "^4.3.2"
 	},
 	"peerDependencies": {},
+	"// The correct name is bundledDependencies": true,
+	"// The name bundleDependencies is also honoured": true,
 	"// bundledDependencies": "... is an array of package names",
+	"// bundledDependencies: See": "https://docs.npmjs.com/cli/v6/configuring-npm/package-json#bundleddependencies",
 	"bundledDependencies": [],
 	"optionalDependencies": {},
 	"engines": {
-		"node": ">= 8"
+		"node": ">= 10"
 	},
 	"os": [
 		"darwin",
@@ -95,13 +97,16 @@
 		"ia32",
 		"x64"
 	],
+	"author": "Tom Weatherhead <thaw@2hrd4u.org> (https://github.com/tom-weatherhead)",
 	"contributors": [
+		"Anonymous <conspirator@deep.state.gov>",
+		"Assimilated Captain <locutus@b.org>",
+		"Austin James <president@warehouse.serendip.com>",
 		"Autonomous Weapons Systems Unlimited <killer@robots.com>",
 		"Buddy Guy <deadbeef@decafbad.gov>",
 		"Deprecated <deadc0de@obso1337.org>",
-		"Locutus <cube@cyb.org>",
+		"Loitering Munition <smart@bom.com>",
 		"Sgt. Pepper <shoot1st@thinkl8r.mil>"
 	],
-	"author": "Tom Weatherhead <thaw@2hrd4u.org> (https://github.com/tom-weatherhead)",
 	"license": "MIT"
 }

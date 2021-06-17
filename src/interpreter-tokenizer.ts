@@ -5,8 +5,6 @@
 // The original C# version was a product of the Midnight Coding Club,
 // early one morning in August 2012 - July 2014.
 
-'use strict';
-
 import { LanguageSelector } from './language-selectors';
 import { LexicalState } from './lexical-states';
 import { Token } from './token';
