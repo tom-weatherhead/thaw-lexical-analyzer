@@ -10,10 +10,7 @@ test('Create Lisp tokenizer', () => {
 
 	// Act
 	// console.log(`engine.gsChapter1 is ${engine.gsChapter1}`);
-	const actualValue: any = createTokenizer(
-		LexicalAnalyzerSelector.MidnightHack,
-		LanguageSelector.LISP
-	);
+	const actualValue = createTokenizer(LexicalAnalyzerSelector.MidnightHack, LanguageSelector.LISP);
 
 	// Assert
 	expect(actualValue).toBeTruthy();

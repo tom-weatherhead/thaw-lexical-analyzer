@@ -31,11 +31,7 @@ export class InterpreterTokenizer extends TokenizerBase {
 		this.dictCharToTokenType.set('(', LexicalState.tokenLeftBracket);
 		this.dictCharToTokenType.set(')', LexicalState.tokenRightBracket);
 
-		if (
-			gs === LanguageSelector.LISP ||
-			gs === LanguageSelector.Scheme ||
-			gs === LanguageSelector.SASL
-		) {
+		if (gs === LanguageSelector.LISP || gs === LanguageSelector.Scheme || gs === LanguageSelector.SASL) {
 			this.dictCharToTokenType.set("'", LexicalState.tokenApostrophe);
 			this.dictCharToTokenType.set('"', LexicalState.tokenStrLit);
 			this.markQuotedTokens = true;
@@ -60,29 +56,14 @@ export class InterpreterTokenizer extends TokenizerBase {
 		if (gs === LanguageSelector.Prolog2) {
 			this.dictCharToTokenType.set(',', LexicalState.tokenComma);
 			this.dictCharToTokenType.set('.', LexicalState.tokenDot);
-			this.dictCharToTokenType.set(
-				'[',
-				LexicalState.tokenLeftSquareBracket
-			);
-			this.dictCharToTokenType.set(
-				']',
-				LexicalState.tokenRightSquareBracket
-			);
+			this.dictCharToTokenType.set('[', LexicalState.tokenLeftSquareBracket);
+			this.dictCharToTokenType.set(']', LexicalState.tokenRightSquareBracket);
 			this.dictCharToTokenType.set('|', LexicalState.tokenOrBar);
 			this.dictCharToTokenType.set(';', LexicalState.tokenSemicolon);
 			this.dictCharToTokenType.set('{', LexicalState.tokenLeftCurlyBrace);
-			this.dictCharToTokenType.set(
-				'}',
-				LexicalState.tokenRightCurlyBrace
-			);
-			this.dictQuoteDelimiterToTokenType.set(
-				"'",
-				LexicalState.tokenIdent
-			); // For constructing identifiers that contain spaces or special characters.
-			this.dictQuoteDelimiterToTokenType.set(
-				'"',
-				LexicalState.tokenStrLit
-			);
+			this.dictCharToTokenType.set('}', LexicalState.tokenRightCurlyBrace);
+			this.dictQuoteDelimiterToTokenType.set("'", LexicalState.tokenIdent); // For constructing identifiers that contain spaces or special characters.
+			this.dictQuoteDelimiterToTokenType.set('"', LexicalState.tokenStrLit);
 			this.commentDelimiter = '%'; // See http://users.cs.cf.ac.uk/O.F.Rana/prolog/lectureP2/node10.html
 		}
 
@@ -90,23 +71,11 @@ export class InterpreterTokenizer extends TokenizerBase {
 			this.dictCharToTokenType.clear();
 			this.dictCharToTokenType.set(',', LexicalState.tokenComma);
 			this.dictCharToTokenType.set(':', LexicalState.tokenColon);
-			this.dictCharToTokenType.set(
-				'[',
-				LexicalState.tokenLeftSquareBracket
-			);
-			this.dictCharToTokenType.set(
-				']',
-				LexicalState.tokenRightSquareBracket
-			);
+			this.dictCharToTokenType.set('[', LexicalState.tokenLeftSquareBracket);
+			this.dictCharToTokenType.set(']', LexicalState.tokenRightSquareBracket);
 			this.dictCharToTokenType.set('{', LexicalState.tokenLeftCurlyBrace);
-			this.dictCharToTokenType.set(
-				'}',
-				LexicalState.tokenRightCurlyBrace
-			);
-			this.dictQuoteDelimiterToTokenType.set(
-				'"',
-				LexicalState.tokenStrLit
-			);
+			this.dictCharToTokenType.set('}', LexicalState.tokenRightCurlyBrace);
+			this.dictQuoteDelimiterToTokenType.set('"', LexicalState.tokenStrLit);
 			// Is it possible to place a comment in a real JSON expression?  What is the delimiter?
 		}
 
@@ -136,13 +105,7 @@ export class InterpreterTokenizer extends TokenizerBase {
 
 		for (;;) {
 			if (this.charNum >= this.str.length) {
-				return new Token(
-					LexicalState.tokenEOF,
-					'EOF',
-					this.lineNum,
-					startColNum,
-					false
-				);
+				return new Token(LexicalState.tokenEOF, 'EOF', this.lineNum, startColNum, false);
 			}
 
 			// let cAsStr = this.str.Substring(this.charNum, 1);
@@ -187,9 +150,7 @@ export class InterpreterTokenizer extends TokenizerBase {
 			}
 
 			if (this.dictQuoteDelimiterToTokenType.get(c) !== undefined) {
-				const tokenType = this.dictQuoteDelimiterToTokenType.get(
-					c
-				) as number;
+				const tokenType = this.dictQuoteDelimiterToTokenType.get(c) as number;
 				const delimiter = c;
 
 				for (;;) {
@@ -211,13 +172,7 @@ export class InterpreterTokenizer extends TokenizerBase {
 							startColNum
 						);
 					} else if (c === delimiter) {
-						return new Token(
-							tokenType,
-							this.sbToken,
-							this.lineNum,
-							startColNum,
-							false
-						);
+						return new Token(tokenType, this.sbToken, this.lineNum, startColNum, false);
 					} else {
 						this.sbToken = this.sbToken + c;
 					}
@@ -230,24 +185,14 @@ export class InterpreterTokenizer extends TokenizerBase {
 				if (this.markQuotedTokens) {
 					this.lastTokenWasASingleQuote = c === "'";
 
-					if (
-						c === '(' &&
-						(localLastTokenWasASingleQuote ||
-							this.quotedBracketDepth > 0)
-					) {
+					if (c === '(' && (localLastTokenWasASingleQuote || this.quotedBracketDepth > 0)) {
 						++this.quotedBracketDepth;
 					} else if (c === ')' && this.quotedBracketDepth > 0) {
 						--this.quotedBracketDepth;
 					}
 				}
 
-				return new Token(
-					tokenType,
-					cAsStr,
-					this.lineNum,
-					startColNum,
-					false
-				);
+				return new Token(tokenType, cAsStr, this.lineNum, startColNum, false);
 			}
 
 			// Else: Find the next ( ) ; whitespace \n or EOF, and interpret what's in between as a name.
@@ -282,14 +227,11 @@ export class InterpreterTokenizer extends TokenizerBase {
 				/^((0\.0)|(-?(0|[1-9][0-9]*)\.[0-9]*[1-9])|(-?[1-9][0-9]*\.[0-9]+))$/;
 
 			const tokenAsInteger = parseInt(tokenAsString, 10);
-			const tokenIsInteger =
-				tokenAsInteger === tokenAsInteger &&
-				tokenAsString.match(regexInteger);
+			const tokenIsInteger = tokenAsInteger === tokenAsInteger && tokenAsString.match(regexInteger);
 
 			const tokenAsFloat = parseFloat(tokenAsString);
 			const tokenIsFloat =
-				tokenAsFloat === tokenAsFloat &&
-				tokenAsString.match(regexFloatingPointNumber);
+				tokenAsFloat === tokenAsFloat && tokenAsString.match(regexFloatingPointNumber);
 
 			// The following allows for user-defined function names such as +1 (but not -1).
 
@@ -310,18 +252,8 @@ export class InterpreterTokenizer extends TokenizerBase {
 			// else if (tokenAsString[0] != '+' && double.TryParse(tokenAsString, out tokenAsDouble)) {
 			// 	result = new Token(LexicalState.tokenFltLit, tokenAsDouble, this.lineNum, startColNum, false);
 			else if (tokenIsFloat && !tokenAsString.match(/^\+/)) {
-				result = new Token(
-					LexicalState.tokenFltLit,
-					tokenAsFloat,
-					this.lineNum,
-					startColNum,
-					false
-				);
-			} else if (
-				tokenAsString === 'quote' &&
-				this.markQuotedTokens &&
-				!localLastTokenWasASingleQuote
-			) {
+				result = new Token(LexicalState.tokenFltLit, tokenAsFloat, this.lineNum, startColNum, false);
+			} else if (tokenAsString === 'quote' && this.markQuotedTokens && !localLastTokenWasASingleQuote) {
 				// For all cases except the ones such as the expression "'quote", as in the unit test EvalInLISP().
 				result = new Token(
 					LexicalState.tokenQuoteKeyword,
@@ -336,9 +268,7 @@ export class InterpreterTokenizer extends TokenizerBase {
 					tokenAsString,
 					this.lineNum,
 					startColNum,
-					this.markQuotedTokens &&
-						(localLastTokenWasASingleQuote ||
-							this.quotedBracketDepth > 0)
+					this.markQuotedTokens && (localLastTokenWasASingleQuote || this.quotedBracketDepth > 0)
 				);
 			}
 
@@ -372,24 +302,14 @@ export class InterpreterTokenizer extends TokenizerBase {
 				dictCharToTokenTypeX.set('#', LexicalState.tokenOctothorpe);
 				dictCharToTokenTypeX.set('$', LexicalState.tokenDollar);
 				dictCharToTokenTypeX.set('.', LexicalState.tokenDot);
-				dictCharToTokenTypeX.set(
-					'[',
-					LexicalState.tokenLeftSquareBracket
-				);
-				dictCharToTokenTypeX.set(
-					']',
-					LexicalState.tokenRightSquareBracket
-				);
+				dictCharToTokenTypeX.set('[', LexicalState.tokenLeftSquareBracket);
+				dictCharToTokenTypeX.set(']', LexicalState.tokenRightSquareBracket);
 				dictCharToTokenTypeX.set('|', LexicalState.tokenOrBar);
 				dictCharToTokenTypeX.set(':', LexicalState.tokenColon);
 				dictCharToTokenTypeX.set('{', LexicalState.tokenLeftCurlyBrace);
-				dictCharToTokenTypeX.set(
-					'}',
-					LexicalState.tokenRightCurlyBrace
-				);
+				dictCharToTokenTypeX.set('}', LexicalState.tokenRightCurlyBrace);
 
-				const possibleTokenType =
-					dictCharToTokenTypeX.get(tokenAsString);
+				const possibleTokenType = dictCharToTokenTypeX.get(tokenAsString);
 
 				if (possibleTokenType !== undefined) {
 					result.tokenType = possibleTokenType as number;

@@ -1,9 +1,7 @@
 // tom-weatherhead/thaw-lexical-analyzer/src/fsm-tokenizer.ts
 
-'use strict';
-
 import { LexicalState } from './lexical-states';
-import { Token } from './token';
+import { Token, TokenValueType } from './token';
 import { TokenizerBase } from './tokenizer-base';
 import { TokenizerException } from './tokenizer-exception';
 
@@ -38,14 +36,8 @@ export class FSMTokenizer extends TokenizerBase {
 		LexicalState.tokenEOF
 	];
 	protected cStringDelimiter = '"'; // This must be the delimiter for tokenStrLit
-	protected readonly dictInternalStringStateToDelimiter = new Map<
-		number,
-		string
-	>();
-	protected readonly dictInternalStringStateToCompletedState = new Map<
-		number,
-		number
-	>();
+	protected readonly dictInternalStringStateToDelimiter = new Map<number, string>();
+	protected readonly dictInternalStringStateToCompletedState = new Map<number, number>();
 	protected removeComments = false;
 	protected cCommentDelimiter = '#';
 	private readonly table = new Map<string, number>();
@@ -61,161 +53,50 @@ export class FSMTokenizer extends TokenizerBase {
 
 		this.ls = ls;
 
-		this.dictInternalStringStateToDelimiter.set(
-			LexicalState.stateStrLitOpen,
-			this.cStringDelimiter
-		);
+		this.dictInternalStringStateToDelimiter.set(LexicalState.stateStrLitOpen, this.cStringDelimiter);
 		this.dictInternalStringStateToCompletedState.set(
 			LexicalState.stateStrLitOpen,
 			LexicalState.tokenStrLit
 		);
 
-		this.addTransition(
-			LexicalState.stateStart,
-			'A',
-			LexicalState.tokenIdent
-		);
-		this.addTransition(
-			LexicalState.stateStart,
-			'0',
-			LexicalState.tokenIntLit
-		);
-		this.addTransition(
-			LexicalState.stateStart,
-			this.cStringDelimiter,
-			LexicalState.stateStrLitOpen
-		);
-		this.addTransition(
-			LexicalState.stateStart,
-			'*',
-			LexicalState.tokenMult
-		);
+		this.addTransition(LexicalState.stateStart, 'A', LexicalState.tokenIdent);
+		this.addTransition(LexicalState.stateStart, '0', LexicalState.tokenIntLit);
+		this.addTransition(LexicalState.stateStart, this.cStringDelimiter, LexicalState.stateStrLitOpen);
+		this.addTransition(LexicalState.stateStart, '*', LexicalState.tokenMult);
 		this.addTransition(LexicalState.stateStart, '/', LexicalState.tokenDiv);
-		this.addTransition(
-			LexicalState.stateStart,
-			'+',
-			LexicalState.tokenPlus
-		);
-		this.addTransition(
-			LexicalState.stateStart,
-			'-',
-			LexicalState.tokenMinus
-		);
-		this.addTransition(
-			LexicalState.stateStart,
-			'=',
-			LexicalState.tokenEqual
-		);
-		this.addTransition(
-			LexicalState.stateStart,
-			'<',
-			LexicalState.tokenLess
-		);
-		this.addTransition(
-			LexicalState.stateStart,
-			'>',
-			LexicalState.tokenGreater
-		);
-		this.addTransition(
-			LexicalState.stateStart,
-			':',
-			LexicalState.tokenColon
-		);
-		this.addTransition(
-			LexicalState.stateStart,
-			';',
-			LexicalState.tokenSemicolon
-		);
-		this.addTransition(
-			LexicalState.stateStart,
-			',',
-			LexicalState.tokenComma
-		);
-		this.addTransition(
-			LexicalState.stateStart,
-			'|',
-			LexicalState.tokenOrBar
-		);
-		this.addTransition(
-			LexicalState.stateStart,
-			'(',
-			LexicalState.tokenLeftBracket
-		);
-		this.addTransition(
-			LexicalState.stateStart,
-			')',
-			LexicalState.tokenRightBracket
-		);
-		this.addTransition(
-			LexicalState.tokenIdent,
-			'A',
-			LexicalState.tokenIdent
-		);
-		this.addTransition(
-			LexicalState.tokenIdent,
-			'0',
-			LexicalState.tokenIdent
-		);
-		this.addTransition(
-			LexicalState.tokenIdent,
-			'_',
-			LexicalState.tokenIdent
-		);
-		this.addTransition(
-			LexicalState.tokenIntLit,
-			'0',
-			LexicalState.tokenIntLit
-		);
-		this.addTransition(
-			LexicalState.tokenIntLit,
-			'.',
-			LexicalState.stateIntLitDot
-		);
-		this.addTransition(
-			LexicalState.stateIntLitDot,
-			'0',
-			LexicalState.tokenFltLit
-		);
-		this.addTransition(
-			LexicalState.tokenFltLit,
-			'0',
-			LexicalState.tokenFltLit
-		);
-		this.addTransition(
-			LexicalState.stateStrLitOpen,
-			this.cStringDelimiter,
-			LexicalState.tokenStrLit
-		);
-		this.addTransition(
-			LexicalState.tokenStrLit,
-			this.cStringDelimiter,
-			LexicalState.stateStrLitOpen
-		);
-		this.addTransition(
-			LexicalState.tokenMinus,
-			'0',
-			LexicalState.tokenIntLit
-		);
-		this.addTransition(
-			LexicalState.tokenMinus,
-			'>',
-			LexicalState.tokenArrow
-		);
-		this.addTransition(
-			LexicalState.tokenGreater,
-			'=',
-			LexicalState.tokenGreaterEqual
-		);
+		this.addTransition(LexicalState.stateStart, '+', LexicalState.tokenPlus);
+		this.addTransition(LexicalState.stateStart, '-', LexicalState.tokenMinus);
+		this.addTransition(LexicalState.stateStart, '=', LexicalState.tokenEqual);
+		this.addTransition(LexicalState.stateStart, '<', LexicalState.tokenLess);
+		this.addTransition(LexicalState.stateStart, '>', LexicalState.tokenGreater);
+		this.addTransition(LexicalState.stateStart, ':', LexicalState.tokenColon);
+		this.addTransition(LexicalState.stateStart, ';', LexicalState.tokenSemicolon);
+		this.addTransition(LexicalState.stateStart, ',', LexicalState.tokenComma);
+		this.addTransition(LexicalState.stateStart, '|', LexicalState.tokenOrBar);
+		this.addTransition(LexicalState.stateStart, '(', LexicalState.tokenLeftBracket);
+		this.addTransition(LexicalState.stateStart, ')', LexicalState.tokenRightBracket);
+		this.addTransition(LexicalState.tokenIdent, 'A', LexicalState.tokenIdent);
+		this.addTransition(LexicalState.tokenIdent, '0', LexicalState.tokenIdent);
+		this.addTransition(LexicalState.tokenIdent, '_', LexicalState.tokenIdent);
+		this.addTransition(LexicalState.tokenIntLit, '0', LexicalState.tokenIntLit);
+		this.addTransition(LexicalState.tokenIntLit, '.', LexicalState.stateIntLitDot);
+		this.addTransition(LexicalState.stateIntLitDot, '0', LexicalState.tokenFltLit);
+		this.addTransition(LexicalState.tokenFltLit, '0', LexicalState.tokenFltLit);
+		this.addTransition(LexicalState.stateStrLitOpen, this.cStringDelimiter, LexicalState.tokenStrLit);
+		this.addTransition(LexicalState.tokenStrLit, this.cStringDelimiter, LexicalState.stateStrLitOpen);
+		this.addTransition(LexicalState.tokenMinus, '0', LexicalState.tokenIntLit);
+		this.addTransition(LexicalState.tokenMinus, '>', LexicalState.tokenArrow);
+		this.addTransition(LexicalState.tokenGreater, '=', LexicalState.tokenGreaterEqual);
 	}
 
-	protected setInputString(str: string) {
+	protected setInputString(str: string): void {
 		this.str = str;
 		this.lineNum = 1;
 		this.colNum = 1;
 		this.charNum = 0;
 	}
 
-	protected addTransition(oldState: number, char: string, newState: number) {
+	protected addTransition(oldState: number, char: string, newState: number): void {
 		const tableKey = makeTokenizerTableKey(oldState, char);
 
 		// if (Object.keys(this.table).includes(tableKey)) {
@@ -292,12 +173,9 @@ export class FSMTokenizer extends TokenizerBase {
 				cSimplified = c;
 			}
 
-			const possibleCompletedState =
-				this.dictInternalStringStateToCompletedState.get(s);
-			const possibleCompletedStateIsAState =
-				possibleCompletedState !== undefined;
-			const possibleCompletedStateAsAState =
-				possibleCompletedState as number;
+			const possibleCompletedState = this.dictInternalStringStateToCompletedState.get(s);
+			const possibleCompletedStateIsAState = possibleCompletedState !== undefined;
+			const possibleCompletedStateAsAState = possibleCompletedState as number;
 
 			if (
 				s !== LexicalState.stateStart &&
@@ -307,10 +185,7 @@ export class FSMTokenizer extends TokenizerBase {
 					// (c.match(/\s/) && Object.keys(this.dictInternalStringStateToCompletedState).indexOf(s) < 0)))
 					(c.match(/\s/) && !possibleCompletedStateIsAState))
 			) {
-				if (
-					possibleCompletedStateIsAState &&
-					(c === '\0' || c === '\n')
-				) {
+				if (possibleCompletedStateIsAState && (c === '\0' || c === '\n')) {
 					// Newline or EOF delimits string literal
 					s = possibleCompletedStateAsAState;
 				}
@@ -340,11 +215,7 @@ export class FSMTokenizer extends TokenizerBase {
 			} else if (s === LexicalState.stateStart && c.match(/\s/)) {
 				++startCol; // Don't buffer white space
 				newState = s; // tokenStart;
-			} else if (
-				s === LexicalState.stateStart &&
-				this.removeComments &&
-				c === this.cCommentDelimiter
-			) {
+			} else if (s === LexicalState.stateStart && this.removeComments && c === this.cCommentDelimiter) {
 				for (;;) {
 					++this.charNum;
 					c = this.getChar();
@@ -390,8 +261,7 @@ export class FSMTokenizer extends TokenizerBase {
 				s = this.recoverToken(stateList);
 
 				if (s !== LexicalState.stateError) {
-					const rewindAmount =
-						this.colNum - (startCol + this.sbToken.length);
+					const rewindAmount = this.colNum - (startCol + this.sbToken.length);
 
 					this.charNum -= rewindAmount;
 					this.colNum = startCol + this.sbToken.length;
@@ -438,7 +308,7 @@ export class FSMTokenizer extends TokenizerBase {
 		// Console.WriteLine("Token: {0} ; Line {1}; Column: {2}", sbToken.ToString(), this.lineNum, startCol);
 
 		const tokenStr = this.sbToken;
-		let tokenValue: any = null;
+		let tokenValue: TokenValueType;
 
 		switch (s) {
 			case LexicalState.tokenIntLit:

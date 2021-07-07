@@ -1,7 +1,5 @@
 // tom-weatherhead/thaw-lexical-analyzer/src/tokenizer-factory.ts
 
-'use strict';
-
 import { InterpreterTokenizer } from './interpreter-tokenizer';
 import { ITokenizer } from './itokenizer';
 import { LexicalAnalyzerSelector } from './lexical-analyzer-selectors';
@@ -17,8 +15,6 @@ export function createTokenizer(las: number, gs: number): ITokenizer {
 			return new Tokenizer(gs);
 
 		default:
-			throw new TokenizerException(
-				`createTokenizer() : Unsupported LexicalAnalyzerSelector ${las}`
-			);
+			throw new TokenizerException(`createTokenizer() : Unsupported LexicalAnalyzerSelector ${las}`);
 	}
 }

@@ -1,7 +1,5 @@
 // tom-weatherhead/thaw-lexical-analyzer/src/tokenizer-base.ts
 
-'use strict';
-
 import { ITokenizer } from './itokenizer';
 import { LexicalState } from './lexical-states';
 import { Token } from './token';

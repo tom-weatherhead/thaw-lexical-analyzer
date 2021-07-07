@@ -1,7 +1,5 @@
 // tom-weatherhead/thaw-lexical-analyzer/src/tokenizer-exception.ts
 
-'use strict';
-
 export class TokenizerException {
 	public readonly message: string;
 	public readonly line: number;

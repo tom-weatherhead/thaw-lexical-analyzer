@@ -1,7 +1,5 @@
 // tom-weatherhead/thaw-lexical-analyzer/src/lexical-states.ts
 
-'use strict';
-
 export enum LexicalState {
 	tokenNone = 1,
 	tokenIntLit,

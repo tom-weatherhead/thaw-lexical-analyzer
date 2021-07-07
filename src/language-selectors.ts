@@ -1,7 +1,5 @@
 // tom-weatherhead/thaw-lexical-analyzer/src/language-selectors.ts
 
-'use strict';
-
 export enum LanguageSelector {
 	MinimalLanguage,
 	Micro,
