@@ -15,6 +15,8 @@ export function createTokenizer(las: number, gs: number): ITokenizer {
 			return new Tokenizer(gs);
 
 		default:
-			throw new TokenizerException(`createTokenizer() : Unsupported LexicalAnalyzerSelector ${las}`);
+			throw new TokenizerException(
+				`createTokenizer() : Unsupported LexicalAnalyzerSelector ${las}`
+			);
 	}
 }

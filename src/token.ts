@@ -11,7 +11,13 @@ export class Token {
 	public readonly column: number;
 	public readonly isQuoted: boolean;
 
-	constructor(tt: number, tv: TokenValueType, line: number, col: number, isQuoted: boolean /* = false */) {
+	constructor(
+		tt: number,
+		tv: TokenValueType,
+		line: number,
+		col: number,
+		isQuoted: boolean /* = false */
+	) {
 		this.tokenType = tt;
 		this.tokenValue = tv;
 		this.line = line;
@@ -26,7 +32,8 @@ export class Token {
 	public getValueAsNumber(): number {
 		if (typeof this.tokenValue !== 'number') {
 			throw new TokenizerException(
-				`Token value '${this.tokenValue}' (type ${typeof this.tokenValue}) is not a number.`,
+				`Token value '${this.tokenValue}' (type ${typeof this
+					.tokenValue}) is not a number.`,
 				this.line,
 				this.column
 			);

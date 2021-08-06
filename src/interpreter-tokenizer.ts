@@ -31,7 +31,11 @@ export class InterpreterTokenizer extends TokenizerBase {
 		this.dictCharToTokenType.set('(', LexicalState.tokenLeftBracket);
 		this.dictCharToTokenType.set(')', LexicalState.tokenRightBracket);
 
-		if (gs === LanguageSelector.LISP || gs === LanguageSelector.Scheme || gs === LanguageSelector.SASL) {
+		if (
+			gs === LanguageSelector.LISP ||
+			gs === LanguageSelector.Scheme ||
+			gs === LanguageSelector.SASL
+		) {
 			this.dictCharToTokenType.set("'", LexicalState.tokenApostrophe);
 			this.dictCharToTokenType.set('"', LexicalState.tokenStrLit);
 			this.markQuotedTokens = true;
@@ -185,7 +189,10 @@ export class InterpreterTokenizer extends TokenizerBase {
 				if (this.markQuotedTokens) {
 					this.lastTokenWasASingleQuote = c === "'";
 
-					if (c === '(' && (localLastTokenWasASingleQuote || this.quotedBracketDepth > 0)) {
+					if (
+						c === '(' &&
+						(localLastTokenWasASingleQuote || this.quotedBracketDepth > 0)
+					) {
 						++this.quotedBracketDepth;
 					} else if (c === ')' && this.quotedBracketDepth > 0) {
 						--this.quotedBracketDepth;
@@ -227,7 +234,8 @@ export class InterpreterTokenizer extends TokenizerBase {
 				/^((0\.0)|(-?(0|[1-9][0-9]*)\.[0-9]*[1-9])|(-?[1-9][0-9]*\.[0-9]+))$/;
 
 			const tokenAsInteger = parseInt(tokenAsString, 10);
-			const tokenIsInteger = tokenAsInteger === tokenAsInteger && tokenAsString.match(regexInteger);
+			const tokenIsInteger =
+				tokenAsInteger === tokenAsInteger && tokenAsString.match(regexInteger);
 
 			const tokenAsFloat = parseFloat(tokenAsString);
 			const tokenIsFloat =
@@ -252,8 +260,18 @@ export class InterpreterTokenizer extends TokenizerBase {
 			// else if (tokenAsString[0] != '+' && double.TryParse(tokenAsString, out tokenAsDouble)) {
 			// 	result = new Token(LexicalState.tokenFltLit, tokenAsDouble, this.lineNum, startColNum, false);
 			else if (tokenIsFloat && !tokenAsString.match(/^\+/)) {
-				result = new Token(LexicalState.tokenFltLit, tokenAsFloat, this.lineNum, startColNum, false);
-			} else if (tokenAsString === 'quote' && this.markQuotedTokens && !localLastTokenWasASingleQuote) {
+				result = new Token(
+					LexicalState.tokenFltLit,
+					tokenAsFloat,
+					this.lineNum,
+					startColNum,
+					false
+				);
+			} else if (
+				tokenAsString === 'quote' &&
+				this.markQuotedTokens &&
+				!localLastTokenWasASingleQuote
+			) {
 				// For all cases except the ones such as the expression "'quote", as in the unit test EvalInLISP().
 				result = new Token(
 					LexicalState.tokenQuoteKeyword,
@@ -268,7 +286,8 @@ export class InterpreterTokenizer extends TokenizerBase {
 					tokenAsString,
 					this.lineNum,
 					startColNum,
-					this.markQuotedTokens && (localLastTokenWasASingleQuote || this.quotedBracketDepth > 0)
+					this.markQuotedTokens &&
+						(localLastTokenWasASingleQuote || this.quotedBracketDepth > 0)
 				);
 			}
 

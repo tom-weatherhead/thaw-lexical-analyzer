@@ -2,7 +2,13 @@
 
 'use strict';
 
-import { createTokenizer, LanguageSelector, LexicalAnalyzerSelector, LexicalState, Token } from '..';
+import {
+	createTokenizer,
+	LanguageSelector,
+	LexicalAnalyzerSelector,
+	LexicalState,
+	Token
+} from '..';
 
 // function testToken(token: engine.Token, tokenType: number, tokenValue: any, lineNumber: number, columnNumber: number, isQuoted: boolean) {
 // 	expect(token.tokenType).toBe(tokenType);
@@ -18,7 +24,10 @@ test('Create Chapter 1 tokenizer', () => {
 
 	// Act
 	// console.log(`engine.gsChapter1 is ${engine.gsChapter1}`);
-	const tokenizer = createTokenizer(LexicalAnalyzerSelector.MidnightHack, LanguageSelector.Chapter1);
+	const tokenizer = createTokenizer(
+		LexicalAnalyzerSelector.MidnightHack,
+		LanguageSelector.Chapter1
+	);
 
 	// Assert
 	expect(tokenizer).toBeTruthy();
@@ -27,7 +36,10 @@ test('Create Chapter 1 tokenizer', () => {
 test('Chapter 1 tokenizer test 1', () => {
 	// Arrange
 	const inputString = '(+ 2 3)';
-	const tokenizer = createTokenizer(LexicalAnalyzerSelector.MidnightHack, LanguageSelector.Chapter1);
+	const tokenizer = createTokenizer(
+		LexicalAnalyzerSelector.MidnightHack,
+		LanguageSelector.Chapter1
+	);
 	// const expectedValue: string = 'The result of test()';
 
 	// Act

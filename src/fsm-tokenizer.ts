@@ -53,7 +53,10 @@ export class FSMTokenizer extends TokenizerBase {
 
 		this.ls = ls;
 
-		this.dictInternalStringStateToDelimiter.set(LexicalState.stateStrLitOpen, this.cStringDelimiter);
+		this.dictInternalStringStateToDelimiter.set(
+			LexicalState.stateStrLitOpen,
+			this.cStringDelimiter
+		);
 		this.dictInternalStringStateToCompletedState.set(
 			LexicalState.stateStrLitOpen,
 			LexicalState.tokenStrLit
@@ -61,7 +64,11 @@ export class FSMTokenizer extends TokenizerBase {
 
 		this.addTransition(LexicalState.stateStart, 'A', LexicalState.tokenIdent);
 		this.addTransition(LexicalState.stateStart, '0', LexicalState.tokenIntLit);
-		this.addTransition(LexicalState.stateStart, this.cStringDelimiter, LexicalState.stateStrLitOpen);
+		this.addTransition(
+			LexicalState.stateStart,
+			this.cStringDelimiter,
+			LexicalState.stateStrLitOpen
+		);
 		this.addTransition(LexicalState.stateStart, '*', LexicalState.tokenMult);
 		this.addTransition(LexicalState.stateStart, '/', LexicalState.tokenDiv);
 		this.addTransition(LexicalState.stateStart, '+', LexicalState.tokenPlus);
@@ -82,8 +89,16 @@ export class FSMTokenizer extends TokenizerBase {
 		this.addTransition(LexicalState.tokenIntLit, '.', LexicalState.stateIntLitDot);
 		this.addTransition(LexicalState.stateIntLitDot, '0', LexicalState.tokenFltLit);
 		this.addTransition(LexicalState.tokenFltLit, '0', LexicalState.tokenFltLit);
-		this.addTransition(LexicalState.stateStrLitOpen, this.cStringDelimiter, LexicalState.tokenStrLit);
-		this.addTransition(LexicalState.tokenStrLit, this.cStringDelimiter, LexicalState.stateStrLitOpen);
+		this.addTransition(
+			LexicalState.stateStrLitOpen,
+			this.cStringDelimiter,
+			LexicalState.tokenStrLit
+		);
+		this.addTransition(
+			LexicalState.tokenStrLit,
+			this.cStringDelimiter,
+			LexicalState.stateStrLitOpen
+		);
 		this.addTransition(LexicalState.tokenMinus, '0', LexicalState.tokenIntLit);
 		this.addTransition(LexicalState.tokenMinus, '>', LexicalState.tokenArrow);
 		this.addTransition(LexicalState.tokenGreater, '=', LexicalState.tokenGreaterEqual);
@@ -215,7 +230,11 @@ export class FSMTokenizer extends TokenizerBase {
 			} else if (s === LexicalState.stateStart && c.match(/\s/)) {
 				++startCol; // Don't buffer white space
 				newState = s; // tokenStart;
-			} else if (s === LexicalState.stateStart && this.removeComments && c === this.cCommentDelimiter) {
+			} else if (
+				s === LexicalState.stateStart &&
+				this.removeComments &&
+				c === this.cCommentDelimiter
+			) {
 				for (;;) {
 					++this.charNum;
 					c = this.getChar();
