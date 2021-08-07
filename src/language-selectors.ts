@@ -10,8 +10,10 @@ export enum LanguageSelector {
 	SASL,
 	CLU,
 	Smalltalk,
-	Prolog,
-	Prolog2, // "Real" Prolog.
+	Prolog, // Kamin's Prolog syntax, from his book.
+	Prolog2, // Real Prolog syntax.
 	Inference,
-	JSON
+	JSON,
+	EcstaSKI, // Evaluation via graph reduction using S, K, I combinators.
+	Adso
 }
