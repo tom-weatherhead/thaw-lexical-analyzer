@@ -88,6 +88,17 @@ export class InterpreterTokenizer extends TokenizerBase {
 		if (gs === LanguageSelector.APL) {
 			this.commentDelimiter = '#'; // We cannot use ';', since [;] is an APL operator.
 		}
+
+		if (gs === LanguageSelector.EcstaSKI) {
+			this.commentDelimiter = '#';
+			this.dictCharToTokenType.set('λ', LexicalState.tokenGreekLetterLambda);
+		}
+
+		if (gs === LanguageSelector.LambdaCalculus) {
+			this.commentDelimiter = '#';
+			this.dictCharToTokenType.set('λ', LexicalState.tokenGreekLetterLambda);
+			this.dictCharToTokenType.set('.', LexicalState.tokenDot);
+		}
 	}
 
 	protected setInputString(str: string): void {
