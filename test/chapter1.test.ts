@@ -2,13 +2,9 @@
 
 'use strict';
 
-import {
-	createTokenizer,
-	LanguageSelector,
-	LexicalAnalyzerSelector,
-	LexicalState,
-	Token
-} from '..';
+import { LanguageSelector, LexicalAnalyzerSelector, LexicalState } from 'thaw-interpreter-types';
+
+import { createToken, createTokenizer } from '..';
 
 // function testToken(token: engine.Token, tokenType: number, tokenValue: any, lineNumber: number, columnNumber: number, isQuoted: boolean) {
 // 	expect(token.tokenType).toBe(tokenType);
@@ -59,11 +55,11 @@ test('Chapter 1 tokenizer test 1', () => {
 
 	// toBe() does a shallow comparison; toStrictEqual() does a deep comparison.
 	expect(actualValue).toStrictEqual([
-		new Token(LexicalState.tokenLeftBracket, '(', 1, 1, false),
-		new Token(LexicalState.tokenPlus, '+', 1, 2, false),
-		new Token(LexicalState.tokenIntLit, 2, 1, 4, false),
-		new Token(LexicalState.tokenIntLit, 3, 1, 6, false),
-		new Token(LexicalState.tokenRightBracket, ')', 1, 7, false),
-		new Token(LexicalState.tokenEOF, 'EOF', 1, 8, false)
+		createToken(LexicalState.tokenLeftBracket, '(', 1, 1, false),
+		createToken(LexicalState.tokenPlus, '+', 1, 2, false),
+		createToken(LexicalState.tokenIntLit, 2, 1, 4, false),
+		createToken(LexicalState.tokenIntLit, 3, 1, 6, false),
+		createToken(LexicalState.tokenRightBracket, ')', 1, 7, false),
+		createToken(LexicalState.tokenEOF, 'EOF', 1, 8, false)
 	]);
 });

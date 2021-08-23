@@ -2,7 +2,9 @@
 
 'use strict';
 
-import { createTokenizer, LanguageSelector, LexicalAnalyzerSelector } from '..';
+import { LanguageSelector, LexicalAnalyzerSelector } from 'thaw-interpreter-types';
+
+import { createTokenizer } from '..';
 
 test('Create Lisp tokenizer', () => {
 	// Arrange

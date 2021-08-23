@@ -1,8 +1,10 @@
 // tom-weatherhead/thaw-lexical-analyzer/src/tokenizer-factory.ts
 
+import { ITokenizer, LexicalAnalyzerSelector } from 'thaw-interpreter-types';
+
 import { InterpreterTokenizer } from './interpreter-tokenizer';
-import { ITokenizer } from './itokenizer';
-import { LexicalAnalyzerSelector } from './lexical-analyzer-selectors';
+// import { ITokenizer } from './itokenizer';
+// import { LexicalAnalyzerSelector } from './lexical-analyzer-selectors';
 import { Tokenizer } from './tokenizer';
 import { TokenizerException } from './tokenizer-exception';
 

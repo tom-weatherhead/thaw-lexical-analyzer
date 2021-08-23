@@ -5,9 +5,11 @@
 // The original C# version was a product of the Midnight Coding Club,
 // early one morning in August 2012 - July 2014.
 
-import { LanguageSelector } from './language-selectors';
-import { LexicalState } from './lexical-states';
-import { Token } from './token';
+import { IToken, LanguageSelector, LexicalState } from 'thaw-interpreter-types';
+
+// import { LanguageSelector } from './language-selectors';
+// import { LexicalState } from './lexical-states';
+import { createToken } from './token';
 import { TokenizerBase } from './tokenizer-base';
 import { TokenizerException } from './tokenizer-exception';
 
@@ -110,8 +112,8 @@ export class InterpreterTokenizer extends TokenizerBase {
 		this.quotedBracketDepth = 0;
 	}
 
-	protected getToken(): Token {
-		let result: Token;
+	protected getToken(): IToken {
+		let result: IToken;
 		let startColNum = this.colNum;
 		const localLastTokenWasASingleQuote = this.lastTokenWasASingleQuote;
 
@@ -120,7 +122,7 @@ export class InterpreterTokenizer extends TokenizerBase {
 
 		for (;;) {
 			if (this.charNum >= this.str.length) {
-				return new Token(LexicalState.tokenEOF, 'EOF', this.lineNum, startColNum, false);
+				return createToken(LexicalState.tokenEOF, 'EOF', this.lineNum, startColNum, false);
 			}
 
 			// let cAsStr = this.str.Substring(this.charNum, 1);
@@ -164,7 +166,7 @@ export class InterpreterTokenizer extends TokenizerBase {
 				continue;
 			}
 
-			if (this.dictQuoteDelimiterToTokenType.get(c) !== undefined) {
+			if (this.dictQuoteDelimiterToTokenType.has(c)) {
 				const tokenType = this.dictQuoteDelimiterToTokenType.get(c) as number;
 				const delimiter = c;
 
@@ -187,14 +189,20 @@ export class InterpreterTokenizer extends TokenizerBase {
 							startColNum
 						);
 					} else if (c === delimiter) {
-						return new Token(tokenType, this.sbToken, this.lineNum, startColNum, false);
+						return createToken(
+							tokenType,
+							this.sbToken,
+							this.lineNum,
+							startColNum,
+							false
+						);
 					} else {
 						this.sbToken = this.sbToken + c;
 					}
 				}
 			}
 
-			if (this.dictCharToTokenType.get(c) !== undefined) {
+			if (this.dictCharToTokenType.has(c)) {
 				const tokenType = this.dictCharToTokenType.get(c) as number;
 
 				if (this.markQuotedTokens) {
@@ -210,7 +218,7 @@ export class InterpreterTokenizer extends TokenizerBase {
 					}
 				}
 
-				return new Token(tokenType, cAsStr, this.lineNum, startColNum, false);
+				return createToken(tokenType, cAsStr, this.lineNum, startColNum, false);
 			}
 
 			// Else: Find the next ( ) ; whitespace \n or EOF, and interpret what's in between as a name.
@@ -226,7 +234,7 @@ export class InterpreterTokenizer extends TokenizerBase {
 
 				// TODO 2014/04/03?  Should we also check dictQuoteDelimiterToTokenType.ContainsKey(c) ?
 				if (
-					this.dictCharToTokenType.get(c) !== undefined ||
+					this.dictCharToTokenType.has(c) ||
 					c === this.commentDelimiter ||
 					c === '\n' ||
 					c.match(/\s/)
@@ -258,7 +266,7 @@ export class InterpreterTokenizer extends TokenizerBase {
 			// 	result = new Token(LexicalState.tokenIntLit, tokenAsInt, this.lineNum, startColNum, false);
 			// }
 			if (tokenIsInteger) {
-				result = new Token(
+				result = createToken(
 					LexicalState.tokenIntLit,
 					tokenAsInteger,
 					this.lineNum,
@@ -271,7 +279,7 @@ export class InterpreterTokenizer extends TokenizerBase {
 			// else if (tokenAsString[0] != '+' && double.TryParse(tokenAsString, out tokenAsDouble)) {
 			// 	result = new Token(LexicalState.tokenFltLit, tokenAsDouble, this.lineNum, startColNum, false);
 			else if (tokenIsFloat && !tokenAsString.match(/^\+/)) {
-				result = new Token(
+				result = createToken(
 					LexicalState.tokenFltLit,
 					tokenAsFloat,
 					this.lineNum,
@@ -284,7 +292,7 @@ export class InterpreterTokenizer extends TokenizerBase {
 				!localLastTokenWasASingleQuote
 			) {
 				// For all cases except the ones such as the expression "'quote", as in the unit test EvalInLISP().
-				result = new Token(
+				result = createToken(
 					LexicalState.tokenQuoteKeyword,
 					tokenAsString,
 					this.lineNum,
@@ -292,7 +300,7 @@ export class InterpreterTokenizer extends TokenizerBase {
 					false
 				);
 			} else {
-				result = new Token(
+				result = createToken(
 					LexicalState.tokenIdent,
 					tokenAsString,
 					this.lineNum,
@@ -341,7 +349,7 @@ export class InterpreterTokenizer extends TokenizerBase {
 
 				const possibleTokenType = dictCharToTokenTypeX.get(tokenAsString);
 
-				if (possibleTokenType !== undefined) {
+				if (typeof possibleTokenType !== 'undefined') {
 					result.tokenType = possibleTokenType as number;
 				}
 			}

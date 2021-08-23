@@ -1,7 +1,9 @@
 // tom-weatherhead/thaw-lexical-analyzer/src/fsm-tokenizer.ts
 
-import { LexicalState } from './lexical-states';
-import { Token, TokenValueType } from './token';
+import { IToken, LexicalState, TokenValueType } from 'thaw-interpreter-types';
+
+// import { LexicalState } from './lexical-states';
+import { createToken } from './token';
 import { TokenizerBase } from './tokenizer-base';
 import { TokenizerException } from './tokenizer-exception';
 
@@ -163,7 +165,7 @@ export class FSMTokenizer extends TokenizerBase {
 	// Return the next valid token read from the specified file stream.
 	// Read buffered characters before reading new characters from fp.
 
-	protected getToken(): Token {
+	protected getToken(): IToken {
 		let c = ''; // A character read from getChar()
 		let startCol = this.colNum; // The column of the first char in a token
 		let s: number = LexicalState.stateStart; // Current state
@@ -357,7 +359,7 @@ export class FSMTokenizer extends TokenizerBase {
 				break;
 		}
 
-		const token = new Token(s, tokenValue, this.lineNum, startCol, false);
+		const token = createToken(s, tokenValue, this.lineNum, startCol, false);
 
 		if (c === '\n') {
 			++this.lineNum;

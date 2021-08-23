@@ -4,9 +4,11 @@
 
 // TODO? : Combine this class into the class FSMTokenizer
 
+import { LanguageSelector, LexicalState } from 'thaw-interpreter-types';
+
 import { FSMTokenizer } from './fsm-tokenizer';
-import { LanguageSelector } from './language-selectors';
-import { LexicalState } from './lexical-states';
+// import { LanguageSelector } from './language-selectors';
+// import { LexicalState } from './lexical-states';
 
 // The tokenizer for the Micro and Inference languages.
 
