@@ -61,11 +61,11 @@
 		"deploy_target_dir": "$NPM_PKG_DIR"
 	},
 	"publishConfig": {},
-	"dependencies": {},
 	"devDependencies": {
 		"@babel/core": "^7.15.0",
 		"@babel/preset-env": "^7.15.0",
 		"@babel/preset-typescript": "^7.15.0",
+		"@rollup/plugin-node-resolve": "^13.0.4",
 		"@types/eslint": "^7.28.0",
 		"@types/jest": "^27.0.0",
 		"@types/node": "^16",
@@ -81,13 +81,11 @@
 		"typescript": "^4.3.5",
 		"typescript-eslint-language-service": "^4.1.4"
 	},
-	"peerDependencies": {},
 	"// The correct name is bundledDependencies": true,
 	"// The name bundleDependencies is also honoured": true,
 	"// bundledDependencies": "... is an array of package names",
 	"// bundledDependencies: See": "https://docs.npmjs.com/cli/v6/configuring-npm/package-json#bundleddependencies",
 	"bundledDependencies": [],
-	"optionalDependencies": {},
 	"engines": {
 		"node": ">= 10"
 	},
