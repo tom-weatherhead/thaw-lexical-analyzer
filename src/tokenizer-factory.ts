@@ -3,8 +3,6 @@
 import { ITokenizer, LexicalAnalyzerSelector } from 'thaw-interpreter-types';
 
 import { InterpreterTokenizer } from './interpreter-tokenizer';
-// import { ITokenizer } from './itokenizer';
-// import { LexicalAnalyzerSelector } from './lexical-analyzer-selectors';
 import { Tokenizer } from './tokenizer';
 import { TokenizerException } from './tokenizer-exception';
 

@@ -1,6 +1,6 @@
 {
 	"name": "thaw-lexical-analyzer",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"description": "A Node.js lexical analyzer (scanner) that tokenizes text input for a parser. Written in TypeScript.",
 	"keywords": [
 		"lexical analyzer",
@@ -78,7 +78,7 @@
 		"prettier": "^2.3.2",
 		"rollup": "^2.56.3",
 		"rollup-plugin-terser": "^7.0.2",
-		"thaw-interpreter-types": "^0.0.0",
+		"thaw-interpreter-types": "file:thaw-interpreter-types.tgz",
 		"typescript": "^4.3.5",
 		"typescript-eslint-language-service": "^4.1.5"
 	},

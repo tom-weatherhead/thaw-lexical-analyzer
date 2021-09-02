@@ -7,8 +7,6 @@
 
 import { IToken, LanguageSelector, LexicalState } from 'thaw-interpreter-types';
 
-// import { LanguageSelector } from './language-selectors';
-// import { LexicalState } from './lexical-states';
 import { createToken } from './token';
 import { TokenizerBase } from './tokenizer-base';
 import { TokenizerException } from './tokenizer-exception';
@@ -96,11 +94,19 @@ export class InterpreterTokenizer extends TokenizerBase {
 			this.dictCharToTokenType.set('λ', LexicalState.tokenGreekLetterLambda);
 		}
 
-		if (gs === LanguageSelector.LambdaCalculus) {
+		if (
+			gs === LanguageSelector.LambdaCalculus ||
+			gs === LanguageSelector.LambdaCalculusIntegerExtension
+		) {
 			this.commentDelimiter = '#';
 			this.dictCharToTokenType.set('λ', LexicalState.tokenGreekLetterLambda);
 			this.dictCharToTokenType.set('.', LexicalState.tokenDot);
 		}
+
+		// if (gs === LanguageSelector.LambdaCalculusIntegerExtension) {
+		// 	this.dictCharToTokenType.set('[', LexicalState.tokenLeftSquareBracket);
+		// 	this.dictCharToTokenType.set(']', LexicalState.tokenRightSquareBracket);
+		// }
 	}
 
 	protected setInputString(str: string): void {
@@ -262,9 +268,6 @@ export class InterpreterTokenizer extends TokenizerBase {
 
 			// The following allows for user-defined function names such as +1 (but not -1).
 
-			// if (IsIntegerLiteral(tokenAsString) && int.TryParse(tokenAsString, out tokenAsInt)) {
-			// 	result = new Token(LexicalState.tokenIntLit, tokenAsInt, this.lineNum, startColNum, false);
-			// }
 			if (tokenIsInteger) {
 				result = createToken(
 					LexicalState.tokenIntLit,
@@ -274,10 +277,7 @@ export class InterpreterTokenizer extends TokenizerBase {
 					false
 				);
 			}
-			// else if (IsDoubleLiteral(tokenAsString) && double.TryParse(tokenAsString, out tokenAsDouble))
-			// Let "+1", etc. be recognized as identifiers, not floats.
-			// else if (tokenAsString[0] != '+' && double.TryParse(tokenAsString, out tokenAsDouble)) {
-			// 	result = new Token(LexicalState.tokenFltLit, tokenAsDouble, this.lineNum, startColNum, false);
+			// Let '+1', etc. be recognized as identifiers, not floats.
 			else if (tokenIsFloat && !tokenAsString.match(/^\+/)) {
 				result = createToken(
 					LexicalState.tokenFltLit,
@@ -309,10 +309,6 @@ export class InterpreterTokenizer extends TokenizerBase {
 						(localLastTokenWasASingleQuote || this.quotedBracketDepth > 0)
 				);
 			}
-
-			// if (result.tokenType === LexicalState.tokenIdent && result.tokenValue === '+') {
-			// 	result.tokenType = LexicalState.tokenPlus;
-			// }
 
 			if (result.tokenType === LexicalState.tokenIdent) {
 				const dictCharToTokenTypeX = new Map<string, number>();

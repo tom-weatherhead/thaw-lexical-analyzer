@@ -8,10 +8,7 @@ import { createTokenizer } from '..';
 
 test('Create Lisp tokenizer', () => {
 	// Arrange
-	// const expectedValue: string = 'The result of test()';
-
 	// Act
-	// console.log(`engine.gsChapter1 is ${engine.gsChapter1}`);
 	const actualValue = createTokenizer(
 		LexicalAnalyzerSelector.MidnightHack,
 		LanguageSelector.LISP

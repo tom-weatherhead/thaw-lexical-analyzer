@@ -1,8 +1,9 @@
 // tom-weatherhead/thaw-lexical-analyzer/src/fsm-tokenizer.ts
 
-import { IToken, LexicalState, TokenValueType } from 'thaw-interpreter-types';
+// Started on April 8, 2014 (?)
 
-// import { LexicalState } from './lexical-states';
+import { IToken, LanguageSelector, LexicalState, TokenValueType } from 'thaw-interpreter-types';
+
 import { createToken } from './token';
 import { TokenizerBase } from './tokenizer-base';
 import { TokenizerException } from './tokenizer-exception';
@@ -14,7 +15,7 @@ function makeTokenizerTableKey(stateParam: number, cParam: string): string {
 // A tokenizer based on a finite state machine.
 
 export class FSMTokenizer extends TokenizerBase {
-	protected readonly ls: number; // LanguageSelector; was  GrammarSelector
+	// protected readonly ls: LanguageSelector; // LanguageSelector; was  GrammarSelector
 	protected readonly acceptableTokens = [
 		LexicalState.tokenIntLit,
 		LexicalState.tokenFltLit,
@@ -50,7 +51,7 @@ export class FSMTokenizer extends TokenizerBase {
 	private charNum = 0; // Current index into str
 	// private bool wasErr = false;   // Set to true if lexical error occurs
 
-	constructor(ls: number) {
+	constructor(protected readonly ls: LanguageSelector) {
 		super();
 
 		this.ls = ls;
@@ -116,7 +117,6 @@ export class FSMTokenizer extends TokenizerBase {
 	protected addTransition(oldState: number, char: string, newState: number): void {
 		const tableKey = makeTokenizerTableKey(oldState, char);
 
-		// if (Object.keys(this.table).includes(tableKey)) {
 		if (Object.keys(this.table).indexOf(tableKey) >= 0) {
 			throw new TokenizerException(
 				`Tokenizer.addTransition() : The key '${tableKey}' ([${oldState}, ${char}]) already exists in the transition table`,
@@ -131,7 +131,6 @@ export class FSMTokenizer extends TokenizerBase {
 	protected getStrLitFromTokenStr(cDelimiter: string): string {
 		const tokenStr2 = this.sbToken;
 
-		// if (string.IsNullOrEmpty(tokenStr) || tokenStr[0] != cDelimiter) {
 		if (!tokenStr2 || tokenStr2[0] !== cDelimiter) {
 			throw new TokenizerException(
 				'Tokenizer.getStrLitFromTokenStr() : Token string error',
@@ -179,11 +178,8 @@ export class FSMTokenizer extends TokenizerBase {
 
 			c = this.getChar();
 
-			// if (char.IsLetter(c)) { // /A-Za-z/.match(c) ?
-			// if (/A-Za-z/.match(c)) {
 			if (c.match(/[A-Za-z]/)) {
 				cSimplified = 'A';
-				// } else if (char.IsDigit(c)) { // /0-9/.match(c) ?
 			} else if (c.match(/[0-9]/)) {
 				cSimplified = '0';
 			} else {
@@ -196,11 +192,7 @@ export class FSMTokenizer extends TokenizerBase {
 
 			if (
 				s !== LexicalState.stateStart &&
-				(c === '\0' ||
-					c === '\n' ||
-					// (char.IsWhiteSpace(c) && !this.dictInternalStringStateToCompletedState.ContainsKey(s))))
-					// (c.match(/\s/) && Object.keys(this.dictInternalStringStateToCompletedState).indexOf(s) < 0)))
-					(c.match(/\s/) && !possibleCompletedStateIsAState))
+				(c === '\0' || c === '\n' || (c.match(/\s/) && !possibleCompletedStateIsAState))
 			) {
 				if (possibleCompletedStateIsAState && (c === '\0' || c === '\n')) {
 					// Newline or EOF delimits string literal
@@ -258,7 +250,6 @@ export class FSMTokenizer extends TokenizerBase {
 			// 	newState = s;
 			// }
 			// #else
-			// else if (this.dictInternalStringStateToDelimiter.ContainsKey(s) && c !== this.dictInternalStringStateToDelimiter[s])
 			else if (c !== this.dictInternalStringStateToDelimiter.get(s)) {
 				newState = s;
 			}
@@ -385,13 +376,8 @@ export class FSMTokenizer extends TokenizerBase {
 
 	private recoverToken(stateList: number[]): number {
 		for (let i = stateList.length - 1; i > 0; i--) {
-			// if (this.acceptableTokens.Contains(stateList[i])) {
 			if (this.acceptableTokens.indexOf(stateList[i]) >= 0) {
 				// Keep only the first i characters of tokenStr.
-				// const newTokenStr = sbToken.ToString().Substring(0, i);
-
-				// sbToken.Clear();
-				// sbToken.Append(newTokenStr);
 				this.sbToken = this.sbToken.substr(0, i); // substr() or substring() ?
 
 				// We do not need to trim the end of the stateList.

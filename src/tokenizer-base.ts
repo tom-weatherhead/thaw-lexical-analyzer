@@ -2,10 +2,6 @@
 
 import { IToken, ITokenizer, LexicalState } from 'thaw-interpreter-types';
 
-// import { ITokenizer } from './itokenizer';
-// import { LexicalState } from './lexical-states';
-// import { Token } from './token';
-
 export abstract class TokenizerBase implements ITokenizer {
 	public tokenize(str: string): IToken[] {
 		const tokenList: IToken[] = [];
