@@ -4,6 +4,7 @@
 
 // TODO? : Combine this class into the class FSMTokenizer
 
+/*
 import { LanguageSelector, LexicalState } from 'thaw-interpreter-types';
 
 import { FSMTokenizer } from './fsm-tokenizer';
@@ -70,3 +71,4 @@ export class Tokenizer extends FSMTokenizer {
 	// 	}
 	// }
 }
+ */

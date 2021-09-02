@@ -1,18 +1,18 @@
 // tom-weatherhead/thaw-lexical-analyzer/src/tokenizer-factory.ts
 
-import { ITokenizer, LexicalAnalyzerSelector } from 'thaw-interpreter-types';
+import { ITokenizer, LanguageSelector, LexicalAnalyzerSelector } from 'thaw-interpreter-types';
 
-import { InterpreterTokenizer } from './interpreter-tokenizer';
-import { Tokenizer } from './tokenizer';
+import { FSMTokenizer } from './fsm-tokenizer';
+import { MidnightHackTokenizer } from './midnight-hack-tokenizer';
 import { TokenizerException } from './tokenizer-exception';
 
-export function createTokenizer(las: number, gs: number): ITokenizer {
+export function createTokenizer(las: LexicalAnalyzerSelector, ls: LanguageSelector): ITokenizer {
 	switch (las) {
-		case LexicalAnalyzerSelector.MidnightHack:
-			return new InterpreterTokenizer(gs);
-
 		case LexicalAnalyzerSelector.FiniteStateMachine:
-			return new Tokenizer(gs);
+			return new FSMTokenizer(ls);
+
+		case LexicalAnalyzerSelector.MidnightHack:
+			return new MidnightHackTokenizer(ls);
 
 		default:
 			throw new TokenizerException(

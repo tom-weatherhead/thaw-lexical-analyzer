@@ -1,4 +1,4 @@
-// tom-weatherhead/thaw-lexical-analyzer/src/interpreter-tokenizer.ts
+// tom-weatherhead/thaw-lexical-analyzer/src/midnight-hack-tokenizer.ts
 
 // The lexical analyzer (tokenizer) implementation corresponding to LexicalAnalyzerSelector.MidnightHack
 
@@ -11,7 +11,7 @@ import { createToken } from './token';
 import { TokenizerBase } from './tokenizer-base';
 import { TokenizerException } from './tokenizer-exception';
 
-export class InterpreterTokenizer extends TokenizerBase {
+export class MidnightHackTokenizer extends TokenizerBase {
 	private str = ''; // The string to be tokenized.
 	private sbToken = '';
 	private lineNum = 1; // Current line number
