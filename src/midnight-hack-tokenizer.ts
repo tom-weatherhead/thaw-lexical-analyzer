@@ -91,22 +91,18 @@ export class MidnightHackTokenizer extends TokenizerBase {
 
 		if (gs === LanguageSelector.EcstaSKI) {
 			this.commentDelimiter = '#';
-			this.dictCharToTokenType.set('λ', LexicalState.tokenGreekLetterLambda);
+			this.dictCharToTokenType.set('λ', LexicalState.tokenLowercaseGreekLetterLambda);
 		}
 
 		if (
 			gs === LanguageSelector.LambdaCalculus ||
+			gs === LanguageSelector.LambdaCalculusWithAugmentedSyntax ||
 			gs === LanguageSelector.LambdaCalculusIntegerExtension
 		) {
 			this.commentDelimiter = '#';
-			this.dictCharToTokenType.set('λ', LexicalState.tokenGreekLetterLambda);
+			this.dictCharToTokenType.set('λ', LexicalState.tokenLowercaseGreekLetterLambda);
 			this.dictCharToTokenType.set('.', LexicalState.tokenDot);
 		}
-
-		// if (gs === LanguageSelector.LambdaCalculusIntegerExtension) {
-		// 	this.dictCharToTokenType.set('[', LexicalState.tokenLeftSquareBracket);
-		// 	this.dictCharToTokenType.set(']', LexicalState.tokenRightSquareBracket);
-		// }
 	}
 
 	protected setInputString(str: string): void {
