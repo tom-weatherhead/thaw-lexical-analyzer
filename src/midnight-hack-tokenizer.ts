@@ -327,6 +327,7 @@ export class MidnightHackTokenizer extends TokenizerBase {
 				dictCharToTokenTypeX.set(')', LexicalState.tokenRightBracket);
 				dictCharToTokenTypeX.set(':=', LexicalState.tokenAssign);
 				dictCharToTokenTypeX.set('->', LexicalState.tokenArrow);
+				dictCharToTokenTypeX.set('=>', LexicalState.tokenThickArrow);
 				dictCharToTokenTypeX.set('!', LexicalState.tokenExclamation);
 				dictCharToTokenTypeX.set("'", LexicalState.tokenApostrophe);
 				dictCharToTokenTypeX.set('#', LexicalState.tokenOctothorpe);
