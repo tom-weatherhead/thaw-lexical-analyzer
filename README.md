@@ -3,17 +3,17 @@ A Node.js lexical analyzer (scanner) that tokenizes text input for a parser. Wri
 
 Obligatory BadgeFest:
 
+[![apple][apple-badge-image]][apple-url]
+[![atom][atom-badge-image]][atom-url]
 [![codeclimate][codeclimate-badge-image]][codeclimate-url]
 [![git][git-badge-image]][git-url]
 [![github][github-badge-image]][github-url]
 [![npm][npm-badge-image]][npm-url]
 [![packagephobia][packagephobia-badge-image]][packagephobia-url]
 [![terminal][terminal-badge-image]][terminal-url]
-[![travis][travis-badge-image]][travis-url]
 [![typescript][typescript-badge-image]][typescript-url]
 
 [![status][status-badge-image]][status-url]
-[![build status][build-status-badge-image]][build-status-url]
 [![npm version][npm-version-badge-image]][npm-version-url]
 [![latest tag][latest-tag-badge-image]][latest-tag-url]
 [![npm total downloads][npm-total-downloads-badge-image]][npm-total-downloads-url]
@@ -44,6 +44,12 @@ Obligatory BadgeFest:
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
 
+[apple-badge-image]: https://badgen.net/badge/icon/apple?icon=apple&label
+[apple-url]: https://www.apple.com
+[atom-badge-image]: https://badgen.net/badge/icon/atom?icon=atom&label
+[atom-url]: https://atom.io
+[circleci-badge-image]: https://badgen.net/badge/icon/circleci?icon=circleci&label
+[circleci-url]: https://circleci.com
 [codeclimate-badge-image]: https://badgen.net/badge/icon/codeclimate?icon=codeclimate&label
 [codeclimate-url]: https://codeclimate.com
 [git-badge-image]: https://badgen.net/badge/icon/git?icon=git&label
@@ -56,15 +62,11 @@ Obligatory BadgeFest:
 [packagephobia-url]: https://packagephobia.com/
 [terminal-badge-image]: https://badgen.net/badge/icon/terminal?icon=terminal&label
 [terminal-url]: https://en.wikipedia.org/wiki/History_of_Unix
-[travis-badge-image]: https://badgen.net/badge/icon/travis?icon=travis&label
-[travis-url]: https://travis-ci.com
 [typescript-badge-image]: https://badgen.net/badge/icon/typescript?icon=typescript&label
 [typescript-url]: https://www.typescriptlang.org
 
 [status-badge-image]: https://badgen.net/github/status/tom-weatherhead/thaw-lexical-analyzer
 [status-url]: https://badgen.net/github/status/tom-weatherhead/thaw-lexical-analyzer
-[build-status-badge-image]: https://secure.travis-ci.org/tom-weatherhead/thaw-lexical-analyzer.svg
-[build-status-url]: https://travis-ci.org/tom-weatherhead/thaw-lexical-analyzer
 [npm-version-badge-image]: https://img.shields.io/npm/v/thaw-lexical-analyzer.svg
 [npm-version-url]: https://www.npmjs.com/package/thaw-lexical-analyzer
 [latest-tag-badge-image]: https://badgen.net/github/tag/tom-weatherhead/thaw-lexical-analyzer
