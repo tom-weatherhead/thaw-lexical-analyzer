@@ -268,23 +268,19 @@ export class FSMTokenizer extends TokenizerBase {
 			// const c = this.getChar();
 			const c = this.str[this.charNum];
 
-			// if (isspace(c)) {
-			if (c.match(/\s/)) {
-				this.charNum++;
-				continue;
-			}
+			if (!c.match(/\s/)) {
+				const newState = this.table.get(makeTokenizerTableKey(s, c));
 
-			const newState = this.table.get(makeTokenizerTableKey(s, c));
+				if (typeof newState === 'undefined') {
+					break;
+				}
 
-			if (typeof newState === 'undefined') {
-				break;
-			}
+				s = newState;
 
-			s = newState;
-
-			if (this.acceptableTokens.indexOf(s) >= 0) {
-				lastValidCol = this.charNum;
-				lastValidState = s;
+				if (this.acceptableTokens.indexOf(s) >= 0) {
+					lastValidCol = this.charNum;
+					lastValidState = s;
+				}
 			}
 
 			this.charNum++;
