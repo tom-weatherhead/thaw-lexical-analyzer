@@ -107,8 +107,11 @@ export class MidnightHackTokenizer extends TokenizerBase {
 		if (gs === LanguageSelector.Protos) {
 			this.commentDelimiter = '#';
 			this.dictCharToTokenType.set(',', LexicalState.tokenComma);
+			this.dictCharToTokenType.set(':', LexicalState.tokenColon);
 			this.dictCharToTokenType.set('[', LexicalState.tokenLeftSquareBracket);
 			this.dictCharToTokenType.set(']', LexicalState.tokenRightSquareBracket);
+			this.dictCharToTokenType.set('{', LexicalState.tokenLeftCurlyBrace);
+			this.dictCharToTokenType.set('}', LexicalState.tokenRightCurlyBrace);
 		}
 	}
 

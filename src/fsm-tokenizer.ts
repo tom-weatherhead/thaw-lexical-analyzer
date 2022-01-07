@@ -13,35 +13,35 @@ import { createToken } from './token';
 import { TokenizerBase } from './tokenizer-base';
 import { TokenizerException } from './tokenizer-exception';
 
-// function makeTokenizerTableKey(stateParam: LexicalState, cParam: string): string {
-// 	return `[${stateParam},${cParam}]`;
-// }
+function makeTokenizerTableKey(stateParam: LexicalState, cParam: string): string {
+	return `[${stateParam},${cParam}]`;
+}
 
 // A tokenizer based on a finite state machine.
 
 export class FSMTokenizer extends TokenizerBase {
-	// protected readonly acceptableTokens = [
-	// 	LexicalState.tokenIntLit,
-	// 	LexicalState.tokenFltLit,
-	// 	LexicalState.tokenStrLit,
-	// 	LexicalState.tokenIdent,
-	// 	LexicalState.tokenMult,
-	// 	LexicalState.tokenDiv,
-	// 	LexicalState.tokenPlus,
-	// 	LexicalState.tokenMinus,
-	// 	LexicalState.tokenEqual,
-	// 	LexicalState.tokenNotEqual,
-	// 	LexicalState.tokenLess,
-	// 	// LexicalState.tokenLessEqual, // In Prolog, it's =<, not <=
-	// 	LexicalState.tokenGreater,
-	// 	LexicalState.tokenGreaterEqual,
-	// 	LexicalState.tokenSemicolon,
-	// 	LexicalState.tokenComma,
-	// 	LexicalState.tokenLeftBracket,
-	// 	LexicalState.tokenRightBracket,
-	// 	LexicalState.tokenArrow,
-	// 	LexicalState.tokenEOF
-	// ];
+	protected readonly acceptableTokens = [
+		LexicalState.tokenIntLit,
+		// LexicalState.tokenFltLit,
+		// LexicalState.tokenStrLit,
+		// LexicalState.tokenIdent,
+		// LexicalState.tokenMult,
+		// LexicalState.tokenDiv,
+		LexicalState.tokenPlus,
+		// LexicalState.tokenMinus,
+		// LexicalState.tokenEqual,
+		// LexicalState.tokenNotEqual,
+		// LexicalState.tokenLess,
+		// // LexicalState.tokenLessEqual, // In Prolog, it's =<, not <=
+		// LexicalState.tokenGreater,
+		// LexicalState.tokenGreaterEqual,
+		// LexicalState.tokenSemicolon,
+		// LexicalState.tokenComma,
+		// LexicalState.tokenLeftBracket,
+		// LexicalState.tokenRightBracket,
+		// LexicalState.tokenArrow,
+		LexicalState.tokenEOF
+	];
 	// protected cStringDelimiter = '"'; // This must be the delimiter for tokenStrLit
 	// protected readonly dictInternalStringStateToDelimiter = new Map<LexicalState, string>();
 	// protected readonly dictInternalStringStateToCompletedState = new Map<
@@ -50,13 +50,13 @@ export class FSMTokenizer extends TokenizerBase {
 	// >();
 	// protected removeComments = false;
 	// protected cCommentDelimiter = '#';
-	// private readonly table = new Map<string, LexicalState>();
+	private readonly table = new Map<string, LexicalState>();
 	// private sbToken = '';
 
-	// private str = ''; // The string to be tokenized.
-	// private lineNum = 1; // Current line number
+	private str = ''; // The string to be tokenized.
+	private lineNum = 1; // Current line number
 	// private colNum = 1; // Current column number
-	// private charNum = 0; // Current index into str
+	private charNum = 0; // Current index into str
 
 	// // private bool wasErr = false;   // Set to true if lexical error occurs
 
@@ -87,7 +87,7 @@ export class FSMTokenizer extends TokenizerBase {
 		// );
 		// this.addTransition(LexicalState.stateStart, '*', LexicalState.tokenMult);
 		// this.addTransition(LexicalState.stateStart, '/', LexicalState.tokenDiv);
-		// this.addTransition(LexicalState.stateStart, '+', LexicalState.tokenPlus);
+		this.addTransition(LexicalState.stateStart, '+', LexicalState.tokenPlus);
 		// this.addTransition(LexicalState.stateStart, '-', LexicalState.tokenMinus);
 		// this.addTransition(LexicalState.stateStart, '=', LexicalState.tokenEqual);
 		// this.addTransition(LexicalState.stateStart, '<', LexicalState.tokenLess);
@@ -167,26 +167,28 @@ export class FSMTokenizer extends TokenizerBase {
 	}
 
 	protected setInputString(str: string): void {
-		// this.str = str;
-		// this.lineNum = 1;
+		this.str = str;
+		this.lineNum = 1;
 		// this.colNum = 1;
-		// this.charNum = 0;
+		this.charNum = 0;
 	}
 
-	// protected addTransition(oldState: LexicalState, char: string, newState: LexicalState): void {
-	// 	const tableKey = makeTokenizerTableKey(oldState, char);
-	//
-	// 	if (Object.keys(this.table).indexOf(tableKey) >= 0) {
-	// 		throw new TokenizerException(
-	// 			`Tokenizer.addTransition() : The key '${tableKey}' ([${oldState}, ${char}]) already exists in the transition table`,
-	// 			this.lineNum,
-	// 			this.colNum
-	// 		);
-	// 	}
-	//
-	// 	this.table.set(tableKey, newState);
-	// }
-	//
+	protected addTransition(oldState: LexicalState, char: string, newState: LexicalState): void {
+		const tableKey = makeTokenizerTableKey(oldState, char);
+
+		// if (Object.keys(this.table).indexOf(tableKey) >= 0) {
+		if (this.table.has(tableKey)) {
+			throw new TokenizerException(
+				`Tokenizer.addTransition() : The key '${tableKey}' ([${oldState}, ${char}]) already exists in the transition table`
+				// ,
+				// this.lineNum,
+				// this.colNum
+			);
+		}
+
+		this.table.set(tableKey, newState);
+	}
+
 	// protected getStrLitFromTokenStr(cDelimiter: string): string {
 	// 	const tokenStr2 = this.sbToken;
 	//
@@ -225,10 +227,71 @@ export class FSMTokenizer extends TokenizerBase {
 
 	protected getToken(): IToken {
 		// let c = ''; // A character read from getChar()
-		// let startCol = this.colNum; // The column of the first char in a token
-		// let s: LexicalState = LexicalState.stateStart; // Current state
+		const startCol = this.charNum; // The column of the first char in a token
+		let s: LexicalState = LexicalState.stateStart; // Current state
 		// const stateList: LexicalState[] = [s]; // List of states corresponding to not-yet-accepted characters
-		//
+		let lastValidCol = NaN;
+		let lastValidState: LexicalState | undefined;
+
+		for (;;) {
+			if (this.charNum >= this.str.length) {
+				if (typeof lastValidState !== 'undefined') {
+					break;
+				}
+
+				return createToken(
+					LexicalState.tokenEOF,
+					'EOF',
+					this.lineNum,
+					this.str.length + 1,
+					false
+				);
+			}
+
+			// const c = this.getChar();
+			const c = this.str[this.charNum];
+
+			// if (isspace(c)) {
+			if (c.match(/\s/)) {
+				continue;
+			}
+
+			const newState = this.table.get(makeTokenizerTableKey(s, c));
+
+			if (typeof newState === 'undefined') {
+				break;
+			}
+
+			s = newState;
+
+			if (this.acceptableTokens.indexOf(s) >= 0) {
+				lastValidCol = this.charNum;
+				lastValidState = s;
+			}
+
+			this.charNum++;
+		}
+
+		if (typeof lastValidState === 'undefined') {
+			throw new TokenizerException(
+				'TokenizerException in fsm.getToken()',
+				this.lineNum,
+				this.charNum
+			);
+		}
+
+		// return createToken(LexicalState.tokenEOF, 'EOF', 1, 1, false);
+
+		this.charNum = lastValidCol + 1;
+
+		return createToken(
+			lastValidState,
+			this.str.substring(startCol, lastValidCol + 1 - startCol),
+			this.lineNum,
+			startCol + 1,
+			false
+		);
+
 		// this.sbToken = '';
 		//
 		// for (;;) {
@@ -420,7 +483,7 @@ export class FSMTokenizer extends TokenizerBase {
 		//
 		// return token;
 
-		return createToken(LexicalState.tokenEOF, 'EOF', 1, 1, false);
+		// return createToken(LexicalState.tokenEOF, 'EOF', 1, 1, false);
 	}
 
 	// private getChar(): string {

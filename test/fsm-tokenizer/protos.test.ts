@@ -35,3 +35,24 @@ test('Protos tokenize EOF test', () => {
 	// toBe() does a shallow comparison; toStrictEqual() does a deep comparison.
 	expect(actualValue).toStrictEqual([createToken(LexicalState.tokenEOF, 'EOF', 1, 1, false)]);
 });
+
+test('Protos tokenize plus EOF test', () => {
+	// Arrange
+	const inputString = '+';
+	const tokenizer = createTokenizer(
+		LexicalAnalyzerSelector.FiniteStateMachine,
+		LanguageSelector.Protos
+	);
+
+	// Act
+	const actualValue = tokenizer.tokenize(inputString);
+
+	// Assert
+	expect(actualValue.length).toBe(2);
+
+	// toBe() does a shallow comparison; toStrictEqual() does a deep comparison.
+	expect(actualValue).toStrictEqual([
+		createToken(LexicalState.tokenPlus, '+', 1, 1, false),
+		createToken(LexicalState.tokenEOF, 'EOF', 1, 2, false)
+	]);
+});
