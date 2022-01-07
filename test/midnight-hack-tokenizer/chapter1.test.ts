@@ -1,10 +1,10 @@
-// tom-weatherhead/thaw-lexical-analyzer/test/chapter1.test.ts
+// tom-weatherhead/thaw-lexical-analyzer/test/midnight-hack-tokenizer/chapter1.test.ts
 
 'use strict';
 
 import { LanguageSelector, LexicalAnalyzerSelector, LexicalState } from 'thaw-interpreter-types';
 
-import { createToken, createTokenizer } from '..';
+import { createToken, createTokenizer } from '../..';
 
 test('Create Chapter 1 tokenizer', () => {
 	// Arrange

@@ -1,10 +1,10 @@
-// tom-weatherhead/thaw-lexical-analyzer/test/lisp.test.ts
+// tom-weatherhead/thaw-lexical-analyzer/test/midnight-hack-tokenizer/lisp.test.ts
 
 'use strict';
 
 import { LanguageSelector, LexicalAnalyzerSelector } from 'thaw-interpreter-types';
 
-import { createTokenizer } from '..';
+import { createTokenizer } from '../..';
 
 test('Create Lisp tokenizer', () => {
 	// Arrange

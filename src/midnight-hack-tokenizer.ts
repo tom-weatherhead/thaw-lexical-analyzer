@@ -17,14 +17,14 @@ export class MidnightHackTokenizer extends TokenizerBase {
 	private lineNum = 1; // Current line number
 	private colNum = 1; // Current column number
 	private charNum = 0; // Current index into this.str
-	private readonly dictCharToTokenType = new Map<string, number>();
+	private readonly dictCharToTokenType = new Map<string, LexicalState>();
 	private markQuotedTokens = false; // For use in LISP and Scheme (and SASL?) macro support.
 	private lastTokenWasASingleQuote = false;
 	private quotedBracketDepth = 0;
-	private readonly dictQuoteDelimiterToTokenType = new Map<string, number>();
+	private readonly dictQuoteDelimiterToTokenType = new Map<string, LexicalState>();
 	private commentDelimiter = ';';
 
-	constructor(gs: number) {
+	constructor(gs: LanguageSelector) {
 		super();
 
 		// This dictionary is used to recognize single-character tokens.
@@ -102,6 +102,13 @@ export class MidnightHackTokenizer extends TokenizerBase {
 			this.commentDelimiter = '#';
 			this.dictCharToTokenType.set('λ', LexicalState.tokenLowercaseGreekLetterLambda);
 			this.dictCharToTokenType.set('.', LexicalState.tokenDot);
+		}
+
+		if (gs === LanguageSelector.Protos) {
+			this.commentDelimiter = '#';
+			this.dictCharToTokenType.set(',', LexicalState.tokenComma);
+			this.dictCharToTokenType.set('[', LexicalState.tokenLeftSquareBracket);
+			this.dictCharToTokenType.set(']', LexicalState.tokenRightSquareBracket);
 		}
 	}
 
@@ -307,7 +314,7 @@ export class MidnightHackTokenizer extends TokenizerBase {
 			}
 
 			if (result.tokenType === LexicalState.tokenIdent) {
-				const dictCharToTokenTypeX = new Map<string, number>();
+				const dictCharToTokenTypeX = new Map<string, LexicalState>();
 
 				dictCharToTokenTypeX.set('*', LexicalState.tokenMult);
 				dictCharToTokenTypeX.set('/', LexicalState.tokenDiv);
