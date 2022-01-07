@@ -24,21 +24,23 @@ export class FSMTokenizer extends TokenizerBase {
 		LexicalState.tokenIntLit,
 		// LexicalState.tokenFltLit,
 		// LexicalState.tokenStrLit,
-		// LexicalState.tokenIdent,
-		// LexicalState.tokenMult,
-		// LexicalState.tokenDiv,
+		LexicalState.tokenIdent,
 		LexicalState.tokenPlus,
-		// LexicalState.tokenMinus,
-		// LexicalState.tokenEqual,
+		LexicalState.tokenMinus,
+		LexicalState.tokenMult,
+		LexicalState.tokenDiv,
+		LexicalState.tokenEqual,
 		// LexicalState.tokenNotEqual,
-		// LexicalState.tokenLess,
+		LexicalState.tokenLess,
 		// // LexicalState.tokenLessEqual, // In Prolog, it's =<, not <=
-		// LexicalState.tokenGreater,
+		LexicalState.tokenGreater,
 		// LexicalState.tokenGreaterEqual,
 		// LexicalState.tokenSemicolon,
-		// LexicalState.tokenComma,
-		// LexicalState.tokenLeftBracket,
-		// LexicalState.tokenRightBracket,
+		LexicalState.tokenComma,
+		LexicalState.tokenColon,
+		LexicalState.tokenAssign,
+		LexicalState.tokenLeftBracket,
+		LexicalState.tokenRightBracket,
 		// LexicalState.tokenArrow,
 		LexicalState.tokenEOF
 	];
@@ -78,29 +80,29 @@ export class FSMTokenizer extends TokenizerBase {
 		// 	LexicalState.tokenStrLit
 		// );
 		//
-		// this.addTransition(LexicalState.stateStart, 'A', LexicalState.tokenIdent);
+		this.addTransition(LexicalState.stateStart, 'A', LexicalState.tokenIdent);
 		// this.addTransition(LexicalState.stateStart, '0', LexicalState.tokenIntLit);
 		// this.addTransition(
 		// 	LexicalState.stateStart,
 		// 	this.cStringDelimiter,
 		// 	LexicalState.stateStrLitOpen
 		// );
-		// this.addTransition(LexicalState.stateStart, '*', LexicalState.tokenMult);
-		// this.addTransition(LexicalState.stateStart, '/', LexicalState.tokenDiv);
+		this.addTransition(LexicalState.stateStart, '*', LexicalState.tokenMult);
+		this.addTransition(LexicalState.stateStart, '/', LexicalState.tokenDiv);
 		this.addTransition(LexicalState.stateStart, '+', LexicalState.tokenPlus);
-		// this.addTransition(LexicalState.stateStart, '-', LexicalState.tokenMinus);
-		// this.addTransition(LexicalState.stateStart, '=', LexicalState.tokenEqual);
-		// this.addTransition(LexicalState.stateStart, '<', LexicalState.tokenLess);
-		// this.addTransition(LexicalState.stateStart, '>', LexicalState.tokenGreater);
-		// this.addTransition(LexicalState.stateStart, ':', LexicalState.tokenColon);
+		this.addTransition(LexicalState.stateStart, '-', LexicalState.tokenMinus);
+		this.addTransition(LexicalState.stateStart, '=', LexicalState.tokenEqual);
+		this.addTransition(LexicalState.stateStart, '<', LexicalState.tokenLess);
+		this.addTransition(LexicalState.stateStart, '>', LexicalState.tokenGreater);
+		this.addTransition(LexicalState.stateStart, ':', LexicalState.tokenColon);
 		// this.addTransition(LexicalState.stateStart, ';', LexicalState.tokenSemicolon);
-		// this.addTransition(LexicalState.stateStart, ',', LexicalState.tokenComma);
+		this.addTransition(LexicalState.stateStart, ',', LexicalState.tokenComma);
 		// this.addTransition(LexicalState.stateStart, '|', LexicalState.tokenOrBar);
-		// this.addTransition(LexicalState.stateStart, '(', LexicalState.tokenLeftBracket);
-		// this.addTransition(LexicalState.stateStart, ')', LexicalState.tokenRightBracket);
-		// this.addTransition(LexicalState.tokenIdent, 'A', LexicalState.tokenIdent);
-		// this.addTransition(LexicalState.tokenIdent, '0', LexicalState.tokenIdent);
-		// this.addTransition(LexicalState.tokenIdent, '_', LexicalState.tokenIdent);
+		this.addTransition(LexicalState.stateStart, '(', LexicalState.tokenLeftBracket);
+		this.addTransition(LexicalState.stateStart, ')', LexicalState.tokenRightBracket);
+		this.addTransition(LexicalState.tokenIdent, 'A', LexicalState.tokenIdent);
+		this.addTransition(LexicalState.tokenIdent, '0', LexicalState.tokenIdent);
+		this.addTransition(LexicalState.tokenIdent, '_', LexicalState.tokenIdent);
 		// this.addTransition(LexicalState.tokenIntLit, '0', LexicalState.tokenIntLit);
 		// this.addTransition(LexicalState.tokenIntLit, '.', LexicalState.stateIntLitDot);
 		// this.addTransition(LexicalState.stateIntLitDot, '0', LexicalState.tokenFltLit);
@@ -121,7 +123,7 @@ export class FSMTokenizer extends TokenizerBase {
 		//
 		// this.acceptableTokens.push(LexicalState.tokenAssign); // := is a Micro token.
 		//
-		// this.addTransition(LexicalState.tokenColon, '=', LexicalState.tokenAssign);
+		this.addTransition(LexicalState.tokenColon, '=', LexicalState.tokenAssign);
 		//
 		// if (this.ls === LanguageSelector.Inference) {
 		// 	this.acceptableTokens.push(LexicalState.tokenBoolIdent);
@@ -266,9 +268,15 @@ export class FSMTokenizer extends TokenizerBase {
 			}
 
 			// const c = this.getChar();
-			const c = this.str[this.charNum];
+			let c = this.str[this.charNum];
 
 			if (!c.match(/\s/)) {
+				if (c.match(/[A-Za-z]/)) {
+					c = 'A';
+				} else if (c.match(/[0-9]/)) {
+					c = '0';
+				}
+
 				const newState = this.table.get(makeTokenizerTableKey(s, c));
 
 				if (typeof newState === 'undefined') {
