@@ -226,6 +226,22 @@ export class FSMTokenizer extends TokenizerBase {
 	// Read buffered characters before reading new characters from fp.
 
 	protected getToken(): IToken {
+		// Skip any initial whitespace before settiing startCol
+
+		while (this.charNum < this.str.length && this.str[this.charNum].match(/\s/)) {
+			this.charNum++;
+		}
+
+		if (this.charNum >= this.str.length) {
+			return createToken(
+				LexicalState.tokenEOF,
+				'EOF',
+				this.lineNum,
+				this.str.length + 1,
+				false
+			);
+		}
+
 		// let c = ''; // A character read from getChar()
 		const startCol = this.charNum; // The column of the first char in a token
 		let s: LexicalState = LexicalState.stateStart; // Current state
@@ -235,17 +251,18 @@ export class FSMTokenizer extends TokenizerBase {
 
 		for (;;) {
 			if (this.charNum >= this.str.length) {
-				if (typeof lastValidState !== 'undefined') {
-					break;
-				}
-
-				return createToken(
-					LexicalState.tokenEOF,
-					'EOF',
-					this.lineNum,
-					this.str.length + 1,
-					false
-				);
+				// if (typeof lastValidState !== 'undefined') {
+				// 	break;
+				// }
+				//
+				// return createToken(
+				// 	LexicalState.tokenEOF,
+				// 	'EOF',
+				// 	this.lineNum,
+				// 	this.str.length + 1,
+				// 	false
+				// );
+				break;
 			}
 
 			// const c = this.getChar();
@@ -253,6 +270,7 @@ export class FSMTokenizer extends TokenizerBase {
 
 			// if (isspace(c)) {
 			if (c.match(/\s/)) {
+				this.charNum++;
 				continue;
 			}
 
@@ -282,11 +300,21 @@ export class FSMTokenizer extends TokenizerBase {
 
 		// return createToken(LexicalState.tokenEOF, 'EOF', 1, 1, false);
 
-		this.charNum = lastValidCol + 1;
+		// console.log(`Resetting charNum from ${this.charNum} to ${lastValidCol + 1}`);
+		// this.charNum = lastValidCol + 1;
+		//
+		// console.log('startCol is', startCol);
+		// console.log('lastValidCol is', lastValidCol);
+		// console.log('lastValidCol + 1 - startCol is', lastValidCol + 1 - startCol);
+		// console.log('this.str is', this.str);
+		// console.log(
+		// 	'this.str.substring(startCol, lastValidCol + 1 - startCol) is',
+		// 	this.str.substring(startCol, lastValidCol + 1 - startCol)
+		// );
 
 		return createToken(
 			lastValidState,
-			this.str.substring(startCol, lastValidCol + 1 - startCol),
+			this.str.substring(startCol, lastValidCol + 1),
 			this.lineNum,
 			startCol + 1,
 			false
