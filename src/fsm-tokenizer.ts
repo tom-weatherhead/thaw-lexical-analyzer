@@ -44,7 +44,11 @@ export class FSMTokenizer extends TokenizerBase {
 		LexicalState.tokenRightBracket,
 		LexicalState.tokenLeftSquareBracket,
 		LexicalState.tokenRightSquareBracket,
+		LexicalState.tokenRightCurlyBrace,
+		LexicalState.tokenLeftCurlyBrace,
 		// LexicalState.tokenArrow,
+		LexicalState.token2Ampersand,
+		LexicalState.token2OrBar,
 		LexicalState.tokenEOF
 	];
 	// protected cStringDelimiter = '"'; // This must be the delimiter for tokenStrLit
@@ -109,11 +113,12 @@ export class FSMTokenizer extends TokenizerBase {
 		this.addTransition(LexicalState.stateStart, ':', LexicalState.tokenColon);
 		// this.addTransition(LexicalState.stateStart, ';', LexicalState.tokenSemicolon);
 		this.addTransition(LexicalState.stateStart, ',', LexicalState.tokenComma);
-		// this.addTransition(LexicalState.stateStart, '|', LexicalState.tokenOrBar);
 		this.addTransition(LexicalState.stateStart, '(', LexicalState.tokenLeftBracket);
 		this.addTransition(LexicalState.stateStart, ')', LexicalState.tokenRightBracket);
 		this.addTransition(LexicalState.stateStart, '[', LexicalState.tokenLeftSquareBracket);
 		this.addTransition(LexicalState.stateStart, ']', LexicalState.tokenRightSquareBracket);
+		this.addTransition(LexicalState.stateStart, '{', LexicalState.tokenLeftCurlyBrace);
+		this.addTransition(LexicalState.stateStart, '}', LexicalState.tokenRightCurlyBrace);
 
 		this.addTransition(LexicalState.tokenIdent, 'A', LexicalState.tokenIdent);
 		this.addTransition(LexicalState.tokenIdent, '0', LexicalState.tokenIdent);
@@ -139,17 +144,9 @@ export class FSMTokenizer extends TokenizerBase {
 		// this.addTransition(LexicalState.tokenMinus, '>', LexicalState.tokenArrow);
 		// this.addTransition(LexicalState.tokenGreater, '=', LexicalState.tokenGreaterEqual);
 		//
-		// this.acceptableTokens.push(LexicalState.tokenAssign); // := is a Micro token.
-		//
 		this.addTransition(LexicalState.tokenColon, '=', LexicalState.tokenAssign);
-		//
-		// if (this.ls === LanguageSelector.Inference) {
-		// 	this.acceptableTokens.push(LexicalState.tokenBoolIdent);
-		// 	this.acceptableTokens.push(LexicalState.tokenSkolemIdent);
 		// 	this.acceptableTokens.push(LexicalState.token2OrBar);
 		// 	this.acceptableTokens.push(LexicalState.token2Ampersand);
-		// 	this.acceptableTokens.push(LexicalState.tokenExclamation);
-		// 	this.acceptableTokens.push(LexicalState.tokenVariable);
 		// 	this.acceptableTokens.push(LexicalState.tokenLessEqual);
 		//
 		// 	this.addTransition(LexicalState.stateStart, '&', LexicalState.stateAmpersand);
@@ -173,17 +170,11 @@ export class FSMTokenizer extends TokenizerBase {
 		// 	this.addTransition(LexicalState.tokenBoolIdent, '0', LexicalState.tokenBoolIdent);
 		// 	this.addTransition(LexicalState.tokenBoolIdent, '_', LexicalState.tokenBoolIdent);
 		// }
-		//
-		// if (this.ls === LanguageSelector.Protos) {
-		// 	this.acceptableTokens.push(LexicalState.token2OrBar);
-		// 	this.acceptableTokens.push(LexicalState.token2Ampersand);
-		// 	this.acceptableTokens.push(LexicalState.tokenPlusEqual);
-		//
-		// 	this.addTransition(LexicalState.stateStart, '&', LexicalState.stateAmpersand);
-		// 	this.addTransition(LexicalState.tokenOrBar, '|', LexicalState.token2OrBar);
-		// 	this.addTransition(LexicalState.stateAmpersand, '&', LexicalState.token2Ampersand);
-		// 	this.addTransition(LexicalState.tokenPlus, '=', LexicalState.tokenPlusEqual);
-		// }
+
+		this.addTransition(LexicalState.stateStart, '&', LexicalState.stateAmpersand);
+		this.addTransition(LexicalState.stateStart, '|', LexicalState.tokenOrBar);
+		this.addTransition(LexicalState.stateAmpersand, '&', LexicalState.token2Ampersand);
+		this.addTransition(LexicalState.tokenOrBar, '|', LexicalState.token2OrBar);
 	}
 
 	protected setInputString(str: string): void {
@@ -196,13 +187,9 @@ export class FSMTokenizer extends TokenizerBase {
 	protected addTransition(oldState: LexicalState, char: string, newState: LexicalState): void {
 		const tableKey = makeTokenizerTableKey(oldState, char);
 
-		// if (Object.keys(this.table).indexOf(tableKey) >= 0) {
 		if (this.table.has(tableKey)) {
 			throw new TokenizerException(
 				`Tokenizer.addTransition() : The key '${tableKey}' ([${oldState}, ${char}]) already exists in the transition table`
-				// ,
-				// this.lineNum,
-				// this.colNum
 			);
 		}
 
@@ -237,31 +224,11 @@ export class FSMTokenizer extends TokenizerBase {
 	//
 	// 	return sb;
 	// }
-	//
-	// // protected ExtendedGetTokenValue(ref TokenType s, tokenStr: string): object {
-	// // 	return null;
-	// // }
 
 	// Return the next valid token read from the specified file stream.
 	// Read buffered characters before reading new characters from fp.
 
 	protected getToken(): IToken {
-		// Skip any initial whitespace before settiing startCol
-
-		// while (this.charNum < this.str.length && this.str[this.charNum].match(/\s/)) {
-		// 	this.charNum++;
-		// }
-		//
-		// if (this.charNum >= this.str.length) {
-		// 	return createToken(
-		// 		LexicalState.tokenEOF,
-		// 		'EOF',
-		// 		this.lineNum,
-		// 		this.str.length + 1,
-		// 		false
-		// 	);
-		// }
-
 		// let c = ''; // A character read from getChar()
 		let startCol = NaN; // this.charNum; // The column of the first char in a token
 		let s: LexicalState = LexicalState.stateStart; // Current state
@@ -271,21 +238,9 @@ export class FSMTokenizer extends TokenizerBase {
 
 		for (;;) {
 			if (this.charNum >= this.str.length) {
-				// if (typeof lastValidState !== 'undefined') {
-				// 	break;
-				// }
-				//
-				// return createToken(
-				// 	LexicalState.tokenEOF,
-				// 	'EOF',
-				// 	this.lineNum,
-				// 	this.str.length + 1,
-				// 	false
-				// );
 				break;
 			}
 
-			// const c = this.getChar();
 			let c = this.str[this.charNum];
 
 			if (c.match(/\s/)) {
@@ -346,20 +301,6 @@ export class FSMTokenizer extends TokenizerBase {
 				);
 			}
 		}
-
-		// return createToken(LexicalState.tokenEOF, 'EOF', 1, 1, false);
-
-		// console.log(`Resetting charNum from ${this.charNum} to ${lastValidCol + 1}`);
-		// this.charNum = lastValidCol + 1;
-		//
-		// console.log('startCol is', startCol);
-		// console.log('lastValidCol is', lastValidCol);
-		// console.log('lastValidCol + 1 - startCol is', lastValidCol + 1 - startCol);
-		// console.log('this.str is', this.str);
-		// console.log(
-		// 	'this.str.substring(startCol, lastValidCol + 1 - startCol) is',
-		// 	this.str.substring(startCol, lastValidCol + 1 - startCol)
-		// );
 
 		let tokenValue: TokenValueType = this.str.substring(startCol, lastValidCol + 1);
 
@@ -455,17 +396,9 @@ export class FSMTokenizer extends TokenizerBase {
 		// 				break;
 		// 			}
 		// 		}
-		// 	}
-		// 	// #if DEAD_CODE
-		// 	// else if (s == stateStrLitOpen && c != this.cStringDelimiter) {
-		// 	// 	newState = s;
-		// 	// }
-		// 	// #else
-		// 	else if (c !== this.dictInternalStringStateToDelimiter.get(s)) {
+		// 	} else if (c !== this.dictInternalStringStateToDelimiter.get(s)) {
 		// 		newState = s;
-		// 	}
-		// 	// #endif
-		// 	else {
+		// 	} else {
 		// 		const key = makeTokenizerTableKey(s, cSimplified);
 		// 		const possibleNewState = this.table.get(key);
 		//
@@ -496,16 +429,6 @@ export class FSMTokenizer extends TokenizerBase {
 		// 			this.lineNum,
 		// 			startCol
 		// 		);
-		// 		/*
-		// 		Console.WriteLine("Discarding unmatched '{0}' at column {1}", str[startCol], startCol);
-		// 		wasErr = true;
-		// 		strlit.Clear();
-		// 		++startCol;
-		// 		colNum = startCol;
-		// 		tokenStr.Clear();
-		// 		s = LexicalState.stateStart;		// Start over at next unmatched char
-		// 		stateList = [s];
-		// 		 */
 		// 	} else {
 		// 		++this.charNum;
 		//
@@ -519,16 +442,6 @@ export class FSMTokenizer extends TokenizerBase {
 		// 		}
 		// 	}
 		// }
-		//
-		// if (this.acceptableTokens.indexOf(s) < 0) {
-		// 	throw new TokenizerException(
-		// 		`Internal error at line ${this.lineNum}, column ${startCol}: Non-token ${s} accepted`,
-		// 		this.lineNum,
-		// 		startCol
-		// 	);
-		// }
-		//
-		// // Console.WriteLine("Token: {0} ; Line {1}; Column: {2}", sbToken.ToString(), this.lineNum, startCol);
 		//
 		// const tokenStr = this.sbToken;
 		// let tokenValue: TokenValueType;
@@ -569,35 +482,5 @@ export class FSMTokenizer extends TokenizerBase {
 		// }
 		//
 		// return token;
-
-		// return createToken(LexicalState.tokenEOF, 'EOF', 1, 1, false);
 	}
-
-	// private getChar(): string {
-	// 	if (!this.str) {
-	// 		throw new TokenizerException(
-	// 			'Tokenizer.getChar() : The input string is null.  setInputString() must be called first.'
-	// 		);
-	// 	}
-	//
-	// 	if (this.charNum >= 0 && this.charNum < this.str.length) {
-	// 		return this.str[this.charNum];
-	// 	}
-	//
-	// 	return '\0';
-	// }
-	//
-	// private recoverToken(stateList: LexicalState[]): LexicalState {
-	// 	for (let i = stateList.length - 1; i > 0; i--) {
-	// 		if (this.acceptableTokens.indexOf(stateList[i]) >= 0) {
-	// 			// Keep only the first i characters of tokenStr.
-	// 			this.sbToken = this.sbToken.substr(0, i); // substr() or substring() ?
-	//
-	// 			// We do not need to trim the end of the stateList.
-	// 			return stateList[i];
-	// 		}
-	// 	}
-	//
-	// 	return LexicalState.stateError;
-	// }
 }
