@@ -16,42 +16,6 @@ function makeTokenizerTableKey(stateParam: LexicalState, cParam: string): string
 
 export class FSMTokenizer extends TokenizerBase {
 	protected readonly acceptableTokens: LexicalState[] = [];
-	// protected readonly acceptableTokens = [
-	// 	LexicalState.tokenIntLit,
-	// 	// LexicalState.tokenFltLit,
-	// 	// LexicalState.tokenStrLit,
-	// 	LexicalState.tokenIdent,
-	// 	LexicalState.tokenPlus,
-	// 	LexicalState.tokenMinus,
-	// 	LexicalState.tokenMult,
-	// 	LexicalState.tokenDiv,
-	// 	LexicalState.tokenPercent,
-	// 	LexicalState.tokenPlusEqual,
-	// 	LexicalState.tokenMinusEqual,
-	// 	LexicalState.tokenMultEqual,
-	// 	LexicalState.tokenDivEqual,
-	// 	LexicalState.tokenPercentEqual,
-	// 	LexicalState.tokenEqual,
-	// 	// LexicalState.tokenNotEqual,
-	// 	LexicalState.tokenLess,
-	// 	// // LexicalState.tokenLessEqual, // In Prolog, it's =<, not <=
-	// 	LexicalState.tokenGreater,
-	// 	// LexicalState.tokenGreaterEqual,
-	// 	// LexicalState.tokenSemicolon,
-	// 	LexicalState.tokenComma,
-	// 	LexicalState.tokenColon,
-	// 	LexicalState.tokenAssign,
-	// 	LexicalState.tokenLeftBracket,
-	// 	LexicalState.tokenRightBracket,
-	// 	LexicalState.tokenLeftSquareBracket,
-	// 	LexicalState.tokenRightSquareBracket,
-	// 	LexicalState.tokenRightCurlyBrace,
-	// 	LexicalState.tokenLeftCurlyBrace,
-	// 	// LexicalState.tokenArrow,
-	// 	LexicalState.token2Ampersand,
-	// 	LexicalState.token2OrBar,
-	// 	LexicalState.tokenEOF
-	// ];
 	// protected cStringDelimiter = '"'; // This must be the delimiter for tokenStrLit
 	// protected readonly dictInternalStringStateToDelimiter = new Map<LexicalState, string>();
 	// protected readonly dictInternalStringStateToCompletedState = new Map<
@@ -84,20 +48,20 @@ export class FSMTokenizer extends TokenizerBase {
 		}
 
 		if (typeof options.singleCharTokens !== 'undefined') {
-			// for (const [c, s] of options.singleCharTokens) {
-			for (const foo of options.singleCharTokens) {
-				// this.addTransition(LexicalState.stateStart, c, s);
-				// this.acceptableTokens.push(s);
-				this.addTransition(LexicalState.stateStart, foo[0], foo[1]);
-				this.acceptableTokens.push(foo[1]);
+			for (const [c, s] of options.singleCharTokens) {
+				// for (const foo of options.singleCharTokens) {
+				this.addTransition(LexicalState.stateStart, c, s);
+				this.acceptableTokens.push(s);
+				// this.addTransition(LexicalState.stateStart, foo[0], foo[1]);
+				// this.acceptableTokens.push(foo[1]);
 			}
 		}
 
 		if (typeof options.transitions !== 'undefined') {
-			// for (const [s0, c, s1] of options.transitions) {
-			for (const foo of options.transitions) {
-				// this.addTransition(s0, c, s1);
-				this.addTransition(foo[0], foo[1], foo[2]);
+			for (const [s0, c, s1] of options.transitions) {
+				// for (const foo of options.transitions) {
+				this.addTransition(s0, c, s1);
+				// this.addTransition(foo[0], foo[1], foo[2]);
 			}
 		}
 
@@ -115,95 +79,53 @@ export class FSMTokenizer extends TokenizerBase {
 		// 	LexicalState.stateStrLitOpen,
 		// 	LexicalState.tokenStrLit
 		// );
+
+		// this.addTransition(
+		// 	LexicalState.stateStart,
+		// 	this.cStringDelimiter,
+		// 	LexicalState.stateStrLitOpen
+		// );
+
+		// this.addTransition(LexicalState.tokenIntLit, '.', LexicalState.stateIntLitDot);
+		// this.addTransition(LexicalState.stateIntLitDot, '0', LexicalState.tokenFltLit);
+		// this.addTransition(LexicalState.tokenFltLit, '0', LexicalState.tokenFltLit);
+		// this.addTransition(
+		// 	LexicalState.stateStrLitOpen,
+		// 	this.cStringDelimiter,
+		// 	LexicalState.tokenStrLit
+		// );
+		// this.addTransition(
+		// 	LexicalState.tokenStrLit,
+		// 	this.cStringDelimiter,
+		// 	LexicalState.stateStrLitOpen
+		// );
+		// this.addTransition(LexicalState.tokenMinus, '>', LexicalState.tokenArrow);
+		// this.addTransition(LexicalState.tokenGreater, '=', LexicalState.tokenGreaterEqual);
 		//
-		// this.addTransition(LexicalState.stateStart, 'A', LexicalState.tokenIdent);
-		// this.addTransition(LexicalState.stateStart, '0', LexicalState.tokenIntLit);
-		// // this.addTransition(
-		// // 	LexicalState.stateStart,
-		// // 	this.cStringDelimiter,
-		// // 	LexicalState.stateStrLitOpen
-		// // );
+		// 	this.acceptableTokens.push(LexicalState.token2OrBar);
+		// 	this.acceptableTokens.push(LexicalState.token2Ampersand);
+		// 	this.acceptableTokens.push(LexicalState.tokenLessEqual);
 		//
-		// this.addTransition(LexicalState.stateStart, '+', LexicalState.tokenPlus);
-		// this.addTransition(LexicalState.stateStart, '-', LexicalState.tokenMinus);
-		// this.addTransition(LexicalState.stateStart, '*', LexicalState.tokenMult);
-		// this.addTransition(LexicalState.stateStart, '/', LexicalState.tokenDiv);
-		// this.addTransition(LexicalState.stateStart, '%', LexicalState.tokenPercent);
-		//
-		// this.addTransition(LexicalState.tokenPlus, '=', LexicalState.tokenPlusEqual);
-		// this.addTransition(LexicalState.tokenMinus, '=', LexicalState.tokenMinusEqual);
-		// this.addTransition(LexicalState.tokenMult, '=', LexicalState.tokenMultEqual);
-		// this.addTransition(LexicalState.tokenDiv, '=', LexicalState.tokenDivEqual);
-		// this.addTransition(LexicalState.tokenPercent, '=', LexicalState.tokenPercentEqual);
-		//
-		// this.addTransition(LexicalState.stateStart, '=', LexicalState.tokenEqual);
-		// this.addTransition(LexicalState.stateStart, '<', LexicalState.tokenLess);
-		// this.addTransition(LexicalState.stateStart, '>', LexicalState.tokenGreater);
-		// this.addTransition(LexicalState.stateStart, ':', LexicalState.tokenColon);
-		// // this.addTransition(LexicalState.stateStart, ';', LexicalState.tokenSemicolon);
-		// this.addTransition(LexicalState.stateStart, ',', LexicalState.tokenComma);
-		// this.addTransition(LexicalState.stateStart, '(', LexicalState.tokenLeftBracket);
-		// this.addTransition(LexicalState.stateStart, ')', LexicalState.tokenRightBracket);
-		// this.addTransition(LexicalState.stateStart, '[', LexicalState.tokenLeftSquareBracket);
-		// this.addTransition(LexicalState.stateStart, ']', LexicalState.tokenRightSquareBracket);
-		// this.addTransition(LexicalState.stateStart, '{', LexicalState.tokenLeftCurlyBrace);
-		// this.addTransition(LexicalState.stateStart, '}', LexicalState.tokenRightCurlyBrace);
-		//
-		// this.addTransition(LexicalState.tokenIdent, 'A', LexicalState.tokenIdent);
-		// this.addTransition(LexicalState.tokenIdent, '0', LexicalState.tokenIdent);
-		// this.addTransition(LexicalState.tokenIdent, '_', LexicalState.tokenIdent);
-		// this.addTransition(LexicalState.tokenIdent, '.', LexicalState.tokenIdent);
-		// this.addTransition(LexicalState.tokenIdent, '?', LexicalState.tokenIdent);
-		//
-		// this.addTransition(LexicalState.tokenIntLit, '0', LexicalState.tokenIntLit);
-		// // this.addTransition(LexicalState.tokenIntLit, '.', LexicalState.stateIntLitDot);
-		// // this.addTransition(LexicalState.stateIntLitDot, '0', LexicalState.tokenFltLit);
-		// // this.addTransition(LexicalState.tokenFltLit, '0', LexicalState.tokenFltLit);
-		// // this.addTransition(
-		// // 	LexicalState.stateStrLitOpen,
-		// // 	this.cStringDelimiter,
-		// // 	LexicalState.tokenStrLit
-		// // );
-		// // this.addTransition(
-		// // 	LexicalState.tokenStrLit,
-		// // 	this.cStringDelimiter,
-		// // 	LexicalState.stateStrLitOpen
-		// // );
-		// this.addTransition(LexicalState.tokenMinus, '0', LexicalState.tokenIntLit);
-		// // this.addTransition(LexicalState.tokenMinus, '>', LexicalState.tokenArrow);
-		// // this.addTransition(LexicalState.tokenGreater, '=', LexicalState.tokenGreaterEqual);
-		// //
-		// this.addTransition(LexicalState.tokenColon, '=', LexicalState.tokenAssign);
-		// // 	this.acceptableTokens.push(LexicalState.token2OrBar);
-		// // 	this.acceptableTokens.push(LexicalState.token2Ampersand);
-		// // 	this.acceptableTokens.push(LexicalState.tokenLessEqual);
-		// //
-		// // 	this.addTransition(LexicalState.stateStart, '&', LexicalState.stateAmpersand);
-		// // 	this.addTransition(LexicalState.stateStart, '?', LexicalState.stateQuestion);
-		// // 	this.addTransition(LexicalState.stateStart, '!', LexicalState.tokenExclamation);
-		// // 	this.addTransition(LexicalState.stateStart, '$', LexicalState.stateDollar);
-		// // 	this.addTransition(LexicalState.stateDollar, 'A', LexicalState.tokenSkolemIdent);
-		// // 	this.addTransition(LexicalState.tokenSkolemIdent, 'A', LexicalState.tokenSkolemIdent);
-		// // 	this.addTransition(LexicalState.tokenSkolemIdent, '0', LexicalState.tokenSkolemIdent);
-		// // 	this.addTransition(LexicalState.tokenSkolemIdent, '_', LexicalState.tokenSkolemIdent);
-		// // 	this.addTransition(LexicalState.tokenLess, '=', LexicalState.tokenLessEqual);
-		// // 	this.addTransition(LexicalState.stateQuestion, 'A', LexicalState.tokenVariable);
-		// // 	this.addTransition(LexicalState.tokenVariable, 'A', LexicalState.tokenVariable);
-		// // 	this.addTransition(LexicalState.tokenVariable, '0', LexicalState.tokenVariable);
-		// // 	this.addTransition(LexicalState.tokenVariable, '_', LexicalState.tokenVariable);
-		// // 	this.addTransition(LexicalState.tokenOrBar, '|', LexicalState.token2OrBar);
-		// // 	this.addTransition(LexicalState.stateAmpersand, '&', LexicalState.token2Ampersand);
-		// // 	this.addTransition(LexicalState.stateStart, '@', LexicalState.stateAt);
-		// // 	this.addTransition(LexicalState.stateAt, 'A', LexicalState.tokenBoolIdent);
-		// // 	this.addTransition(LexicalState.tokenBoolIdent, 'A', LexicalState.tokenBoolIdent);
-		// // 	this.addTransition(LexicalState.tokenBoolIdent, '0', LexicalState.tokenBoolIdent);
-		// // 	this.addTransition(LexicalState.tokenBoolIdent, '_', LexicalState.tokenBoolIdent);
-		// // }
-		//
-		// this.addTransition(LexicalState.stateStart, '&', LexicalState.stateAmpersand);
-		// this.addTransition(LexicalState.stateStart, '|', LexicalState.tokenOrBar);
-		// this.addTransition(LexicalState.stateAmpersand, '&', LexicalState.token2Ampersand);
-		// this.addTransition(LexicalState.tokenOrBar, '|', LexicalState.token2OrBar);
+		// 	this.addTransition(LexicalState.stateStart, '&', LexicalState.stateAmpersand);
+		// 	this.addTransition(LexicalState.stateStart, '?', LexicalState.stateQuestion);
+		// 	this.addTransition(LexicalState.stateStart, '!', LexicalState.tokenExclamation);
+		// 	this.addTransition(LexicalState.stateStart, '$', LexicalState.stateDollar);
+		// 	this.addTransition(LexicalState.stateDollar, 'A', LexicalState.tokenSkolemIdent);
+		// 	this.addTransition(LexicalState.tokenSkolemIdent, 'A', LexicalState.tokenSkolemIdent);
+		// 	this.addTransition(LexicalState.tokenSkolemIdent, '0', LexicalState.tokenSkolemIdent);
+		// 	this.addTransition(LexicalState.tokenSkolemIdent, '_', LexicalState.tokenSkolemIdent);
+		// 	this.addTransition(LexicalState.tokenLess, '=', LexicalState.tokenLessEqual);
+		// 	this.addTransition(LexicalState.stateQuestion, 'A', LexicalState.tokenVariable);
+		// 	this.addTransition(LexicalState.tokenVariable, 'A', LexicalState.tokenVariable);
+		// 	this.addTransition(LexicalState.tokenVariable, '0', LexicalState.tokenVariable);
+		// 	this.addTransition(LexicalState.tokenVariable, '_', LexicalState.tokenVariable);
+		// 	this.addTransition(LexicalState.tokenOrBar, '|', LexicalState.token2OrBar);
+		// 	this.addTransition(LexicalState.stateAmpersand, '&', LexicalState.token2Ampersand);
+		// 	this.addTransition(LexicalState.stateStart, '@', LexicalState.stateAt);
+		// 	this.addTransition(LexicalState.stateAt, 'A', LexicalState.tokenBoolIdent);
+		// 	this.addTransition(LexicalState.tokenBoolIdent, 'A', LexicalState.tokenBoolIdent);
+		// 	this.addTransition(LexicalState.tokenBoolIdent, '0', LexicalState.tokenBoolIdent);
+		// 	this.addTransition(LexicalState.tokenBoolIdent, '_', LexicalState.tokenBoolIdent);
 	}
 
 	protected setInputString(str: string): void {
