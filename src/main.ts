@@ -2,3 +2,5 @@
 
 export { createToken } from './token';
 export { createTokenizer } from './tokenizer-factory';
+
+export { FSMTokenizer } from './fsm-tokenizer';

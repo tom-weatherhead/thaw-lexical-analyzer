@@ -9,7 +9,8 @@ import { TokenizerException } from './tokenizer-exception';
 export function createTokenizer(las: LexicalAnalyzerSelector, ls: LanguageSelector): ITokenizer {
 	switch (las) {
 		case LexicalAnalyzerSelector.FiniteStateMachine:
-			return new FSMTokenizer(ls);
+			// return new FSMTokenizer(ls);
+			return new FSMTokenizer();
 
 		case LexicalAnalyzerSelector.MidnightHack:
 			return new MidnightHackTokenizer(ls);
