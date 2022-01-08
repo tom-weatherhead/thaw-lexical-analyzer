@@ -140,7 +140,7 @@ export class FSMTokenizer extends TokenizerBase {
 
 		if (this.table.has(tableKey)) {
 			throw new TokenizerException(
-				`Tokenizer.addTransition() : The key '${tableKey}' ([${oldState} (${LexicalState[oldState]}), ${char}]) already exists in the transition table`
+				`Tokenizer.addTransition() : The key '${tableKey}' ([${oldState} (${LexicalState[oldState]}), '${char}']) already exists in the transition table`
 			);
 		}
 

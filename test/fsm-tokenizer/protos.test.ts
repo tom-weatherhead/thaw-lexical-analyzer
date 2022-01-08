@@ -2,9 +2,12 @@
 
 'use strict';
 
-import { LanguageSelector, LexicalAnalyzerSelector, LexicalState } from 'thaw-interpreter-types';
+import {
+	LanguageSelector,
+	LexicalAnalyzerSelector /*, LexicalState */
+} from 'thaw-interpreter-types';
 
-import { createToken, createTokenizer } from '../..';
+import { /* createToken, */ createTokenizer } from '../..';
 
 test('Create Protos tokenizer', () => {
 	// Arrange
