@@ -2,12 +2,7 @@
 
 // Started on April 8, 2014 (?)
 
-import {
-	IToken,
-	LanguageSelector,
-	LexicalState
-	// TokenValueType
-} from 'thaw-interpreter-types';
+import { IToken, LanguageSelector, LexicalState, TokenValueType } from 'thaw-interpreter-types';
 
 import { createToken } from './token';
 import { TokenizerBase } from './tokenizer-base';
@@ -81,7 +76,7 @@ export class FSMTokenizer extends TokenizerBase {
 		// );
 		//
 		this.addTransition(LexicalState.stateStart, 'A', LexicalState.tokenIdent);
-		// this.addTransition(LexicalState.stateStart, '0', LexicalState.tokenIntLit);
+		this.addTransition(LexicalState.stateStart, '0', LexicalState.tokenIntLit);
 		// this.addTransition(
 		// 	LexicalState.stateStart,
 		// 	this.cStringDelimiter,
@@ -103,7 +98,7 @@ export class FSMTokenizer extends TokenizerBase {
 		this.addTransition(LexicalState.tokenIdent, 'A', LexicalState.tokenIdent);
 		this.addTransition(LexicalState.tokenIdent, '0', LexicalState.tokenIdent);
 		this.addTransition(LexicalState.tokenIdent, '_', LexicalState.tokenIdent);
-		// this.addTransition(LexicalState.tokenIntLit, '0', LexicalState.tokenIntLit);
+		this.addTransition(LexicalState.tokenIntLit, '0', LexicalState.tokenIntLit);
 		// this.addTransition(LexicalState.tokenIntLit, '.', LexicalState.stateIntLitDot);
 		// this.addTransition(LexicalState.stateIntLitDot, '0', LexicalState.tokenFltLit);
 		// this.addTransition(LexicalState.tokenFltLit, '0', LexicalState.tokenFltLit);
@@ -117,7 +112,7 @@ export class FSMTokenizer extends TokenizerBase {
 		// 	this.cStringDelimiter,
 		// 	LexicalState.stateStrLitOpen
 		// );
-		// this.addTransition(LexicalState.tokenMinus, '0', LexicalState.tokenIntLit);
+		this.addTransition(LexicalState.tokenMinus, '0', LexicalState.tokenIntLit);
 		// this.addTransition(LexicalState.tokenMinus, '>', LexicalState.tokenArrow);
 		// this.addTransition(LexicalState.tokenGreater, '=', LexicalState.tokenGreaterEqual);
 		//
@@ -230,22 +225,22 @@ export class FSMTokenizer extends TokenizerBase {
 	protected getToken(): IToken {
 		// Skip any initial whitespace before settiing startCol
 
-		while (this.charNum < this.str.length && this.str[this.charNum].match(/\s/)) {
-			this.charNum++;
-		}
-
-		if (this.charNum >= this.str.length) {
-			return createToken(
-				LexicalState.tokenEOF,
-				'EOF',
-				this.lineNum,
-				this.str.length + 1,
-				false
-			);
-		}
+		// while (this.charNum < this.str.length && this.str[this.charNum].match(/\s/)) {
+		// 	this.charNum++;
+		// }
+		//
+		// if (this.charNum >= this.str.length) {
+		// 	return createToken(
+		// 		LexicalState.tokenEOF,
+		// 		'EOF',
+		// 		this.lineNum,
+		// 		this.str.length + 1,
+		// 		false
+		// 	);
+		// }
 
 		// let c = ''; // A character read from getChar()
-		const startCol = this.charNum; // The column of the first char in a token
+		let startCol = NaN; // this.charNum; // The column of the first char in a token
 		let s: LexicalState = LexicalState.stateStart; // Current state
 		// const stateList: LexicalState[] = [s]; // List of states corresponding to not-yet-accepted characters
 		let lastValidCol = NaN;
@@ -271,6 +266,10 @@ export class FSMTokenizer extends TokenizerBase {
 			let c = this.str[this.charNum];
 
 			if (!c.match(/\s/)) {
+				if (Number.isNaN(startCol)) {
+					startCol = this.charNum;
+				}
+
 				if (c.match(/[A-Za-z]/)) {
 					c = 'A';
 				} else if (c.match(/[0-9]/)) {
@@ -295,11 +294,21 @@ export class FSMTokenizer extends TokenizerBase {
 		}
 
 		if (typeof lastValidState === 'undefined') {
-			throw new TokenizerException(
-				'TokenizerException in fsm.getToken()',
-				this.lineNum,
-				this.charNum
-			);
+			if (Number.isNaN(startCol)) {
+				return createToken(
+					LexicalState.tokenEOF,
+					'EOF',
+					this.lineNum,
+					this.str.length + 1,
+					false
+				);
+			} else {
+				throw new TokenizerException(
+					'TokenizerException in fsm.getToken()',
+					this.lineNum,
+					this.charNum
+				);
+			}
 		}
 
 		// return createToken(LexicalState.tokenEOF, 'EOF', 1, 1, false);
@@ -316,13 +325,23 @@ export class FSMTokenizer extends TokenizerBase {
 		// 	this.str.substring(startCol, lastValidCol + 1 - startCol)
 		// );
 
-		return createToken(
-			lastValidState,
-			this.str.substring(startCol, lastValidCol + 1),
-			this.lineNum,
-			startCol + 1,
-			false
-		);
+		let tokenValue: TokenValueType = this.str.substring(startCol, lastValidCol + 1);
+
+		if (lastValidState === LexicalState.tokenIntLit) {
+			const n = Number.parseInt(tokenValue);
+
+			if (Number.isNaN(tokenValue)) {
+				throw new TokenizerException(
+					`fsm.getToken() : Number.parseInt() failed to parse '${n}'`,
+					this.lineNum,
+					this.charNum
+				);
+			}
+
+			tokenValue = n;
+		}
+
+		return createToken(lastValidState, tokenValue, this.lineNum, startCol + 1, false);
 
 		// this.sbToken = '';
 		//
