@@ -214,7 +214,10 @@ export class FSMTokenizer extends TokenizerBase {
 				continue; // No token has started yet, so just skip the whitespace
 			}
 
-			const cIsWhitespace = typeof c.match(/\s/) !== 'undefined';
+			// const cIsWhitespace = typeof c.match(/\s/) !== 'undefined';
+			// -> string.match() returns Array or null, not undefined.
+			// See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/match
+			const cIsWhitespace = c.match(/\s/) !== null;
 
 			if (cIsWhitespace && !Number.isNaN(firstValidCharNum)) {
 				break; // The whitespace delimits the end of the current token
