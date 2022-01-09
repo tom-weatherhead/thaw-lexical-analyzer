@@ -15,7 +15,7 @@ function makeTokenizerTableKey(stateParam: LexicalState, cParam: string): string
 // A tokenizer based on a finite state machine.
 
 export class FSMTokenizer extends TokenizerBase {
-	protected readonly acceptableTokens: LexicalState[] = [];
+	private readonly acceptableTokens: LexicalState[] = [];
 	// protected cStringDelimiter = '"'; // This must be the delimiter for tokenStrLit
 	// protected readonly dictInternalStringStateToDelimiter = new Map<LexicalState, string>();
 	// protected readonly dictInternalStringStateToCompletedState = new Map<
@@ -23,14 +23,14 @@ export class FSMTokenizer extends TokenizerBase {
 	// 	LexicalState
 	// >();
 	// protected removeComments = false;
-	// protected cCommentDelimiter = '#';
+	private readonly commentDelimiter: string | undefined;
 	private readonly table = new Map<string, LexicalState>();
 	// private sbToken = '';
 
 	private str = ''; // The string to be tokenized.
-	private lineNum = 1; // Current line number
-	// private colNum = 1; // Current column number
-	private charNum = 0; // Current index into str
+	private lineNum = 1; // Current line number; one-based
+	private colNum = 1; // Current column number; one-based
+	private charNum = 0; // Current index into str; zero-based
 
 	// // private bool wasErr = false;   // Set to true if lexical error occurs
 
@@ -39,6 +39,7 @@ export class FSMTokenizer extends TokenizerBase {
 			singleCharTokens?: [string, LexicalState][];
 			transitions?: [LexicalState, string, LexicalState][];
 			acceptStates?: LexicalState[];
+			commentDelimiter?: string;
 		} = {}
 	) {
 		super();
@@ -49,20 +50,22 @@ export class FSMTokenizer extends TokenizerBase {
 
 		if (typeof options.singleCharTokens !== 'undefined') {
 			for (const [c, s] of options.singleCharTokens) {
-				// for (const foo of options.singleCharTokens) {
 				this.addTransition(LexicalState.stateStart, c, s);
 				this.acceptableTokens.push(s);
-				// this.addTransition(LexicalState.stateStart, foo[0], foo[1]);
-				// this.acceptableTokens.push(foo[1]);
 			}
 		}
 
 		if (typeof options.transitions !== 'undefined') {
 			for (const [s0, c, s1] of options.transitions) {
-				// for (const foo of options.transitions) {
 				this.addTransition(s0, c, s1);
-				// this.addTransition(foo[0], foo[1], foo[2]);
 			}
+		}
+
+		if (
+			typeof options.commentDelimiter !== 'undefined' &&
+			options.commentDelimiter.length === 1
+		) {
+			this.commentDelimiter = options.commentDelimiter;
 		}
 
 		// if (this.ls !== LanguageSelector.Protos) {
@@ -131,11 +134,11 @@ export class FSMTokenizer extends TokenizerBase {
 	protected setInputString(str: string): void {
 		this.str = str;
 		this.lineNum = 1;
-		// this.colNum = 1;
+		this.colNum = 1;
 		this.charNum = 0;
 	}
 
-	protected addTransition(oldState: LexicalState, char: string, newState: LexicalState): void {
+	private addTransition(oldState: LexicalState, char: string, newState: LexicalState): void {
 		const tableKey = makeTokenizerTableKey(oldState, char);
 
 		if (this.table.has(tableKey)) {
@@ -181,10 +184,10 @@ export class FSMTokenizer extends TokenizerBase {
 
 	protected getToken(): IToken {
 		// let c = ''; // A character read from getChar()
-		let startCol = NaN; // this.charNum; // The column of the first char in a token
+		let firstValidCharNum = NaN; // this.charNum; // The column of the first char in a token
 		let s: LexicalState = LexicalState.stateStart; // Current state
 		// const stateList: LexicalState[] = [s]; // List of states corresponding to not-yet-accepted characters
-		let lastValidCol = NaN;
+		let lastValidCharNum = NaN;
 		let lastValidState: LexicalState | undefined;
 
 		for (;;) {
@@ -194,19 +197,42 @@ export class FSMTokenizer extends TokenizerBase {
 
 			let c = this.str[this.charNum];
 
-			if (c.match(/\s/)) {
-				// c is whitespace
-				this.charNum++;
+			if (typeof this.commentDelimiter !== 'undefined' && c === this.commentDelimiter) {
+				// Skip the rest of the line, up to and including the next \n
+				const eol = this.str.indexOf('\n', this.charNum + 1);
 
-				if (Number.isNaN(startCol)) {
-					continue; // No token has started yet, so just skip the whitespace
+				if (eol < 0) {
+					// No newline found; the comment extends to the end of the string
+					break;
 				}
 
-				break; // The whitespace delimits the end of the current token
+				if (!Number.isNaN(firstValidCharNum)) {
+					break; // The whitespace delimits the end of the current token
+				}
+
+				this.charNum = eol + 1;
+				continue; // No token has started yet, so just skip the whitespace
 			}
 
-			if (Number.isNaN(startCol)) {
-				startCol = this.charNum;
+			if (c.match(/\s/)) {
+				// c is whitespace
+
+				if (!Number.isNaN(firstValidCharNum)) {
+					break; // The whitespace delimits the end of the current token
+				}
+
+				this.charNum++;
+
+				if (c === '\n') {
+					this.lineNum++;
+					this.colNum = 1;
+				}
+
+				continue; // No token has started yet, so just skip the whitespace
+			}
+
+			if (Number.isNaN(firstValidCharNum)) {
+				firstValidCharNum = this.charNum;
 			}
 
 			if (c.match(/[A-Za-z]/)) {
@@ -224,16 +250,21 @@ export class FSMTokenizer extends TokenizerBase {
 			s = newState;
 
 			if (this.acceptableTokens.indexOf(s) >= 0) {
-				lastValidCol = this.charNum;
+				lastValidCharNum = this.charNum;
 				lastValidState = s;
 			}
 
 			this.charNum++;
+
+			if (c === '\n') {
+				this.lineNum++;
+				this.colNum = 1;
+			}
 		}
 
 		if (typeof lastValidState === 'undefined') {
 			// No token was finished
-			if (Number.isNaN(startCol)) {
+			if (Number.isNaN(firstValidCharNum)) {
 				// No token was even started
 				return createToken(
 					LexicalState.tokenEOF,
@@ -248,12 +279,17 @@ export class FSMTokenizer extends TokenizerBase {
 						this.str[this.charNum]
 					}') of '${this.str}'`,
 					this.lineNum,
-					this.charNum
+					this.colNum
 				);
 			}
 		}
 
-		let tokenValue: TokenValueType = this.str.substring(startCol, lastValidCol + 1);
+		// Rewind charNum (the index into this.str)
+		this.charNum = lastValidCharNum + 1;
+		// TODO: Rewind lineNum and colNum too
+
+		// let tokenValue: TokenValueType = this.str.substring(firstValidCharNum, lastValidCharNum + 1);
+		let tokenValue: TokenValueType = this.str.substring(firstValidCharNum, this.charNum);
 
 		if (lastValidState === LexicalState.tokenIntLit) {
 			const n = Number.parseInt(tokenValue);
@@ -262,14 +298,14 @@ export class FSMTokenizer extends TokenizerBase {
 				throw new TokenizerException(
 					`fsm.getToken() : Number.parseInt() failed to parse '${n}'`,
 					this.lineNum,
-					this.charNum
+					this.colNum
 				);
 			}
 
 			tokenValue = n;
 		}
 
-		return createToken(lastValidState, tokenValue, this.lineNum, startCol + 1, false);
+		return createToken(lastValidState, tokenValue, this.lineNum, firstValidCharNum + 1, false);
 
 		// this.sbToken = '';
 		//
