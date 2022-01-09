@@ -214,44 +214,35 @@ export class FSMTokenizer extends TokenizerBase {
 				continue; // No token has started yet, so just skip the whitespace
 			}
 
-			if (c.match(/\s/)) {
-				// c is whitespace
+			const cIsWhitespace = typeof c.match(/\s/) !== 'undefined';
 
-				if (!Number.isNaN(firstValidCharNum)) {
-					break; // The whitespace delimits the end of the current token
+			if (cIsWhitespace && !Number.isNaN(firstValidCharNum)) {
+				break; // The whitespace delimits the end of the current token
+			}
+
+			if (!cIsWhitespace) {
+				if (Number.isNaN(firstValidCharNum)) {
+					firstValidCharNum = this.charNum;
 				}
 
-				this.charNum++;
-
-				if (c === '\n') {
-					this.lineNum++;
-					this.colNum = 1;
+				if (c.match(/[A-Za-z]/)) {
+					c = 'A';
+				} else if (c.match(/[0-9]/)) {
+					c = '0';
 				}
 
-				continue; // No token has started yet, so just skip the whitespace
-			}
+				const newState = this.table.get(makeTokenizerTableKey(s, c));
 
-			if (Number.isNaN(firstValidCharNum)) {
-				firstValidCharNum = this.charNum;
-			}
+				if (typeof newState === 'undefined') {
+					break;
+				}
 
-			if (c.match(/[A-Za-z]/)) {
-				c = 'A';
-			} else if (c.match(/[0-9]/)) {
-				c = '0';
-			}
+				s = newState;
 
-			const newState = this.table.get(makeTokenizerTableKey(s, c));
-
-			if (typeof newState === 'undefined') {
-				break;
-			}
-
-			s = newState;
-
-			if (this.acceptableTokens.indexOf(s) >= 0) {
-				lastValidCharNum = this.charNum;
-				lastValidState = s;
+				if (this.acceptableTokens.indexOf(s) >= 0) {
+					lastValidCharNum = this.charNum;
+					lastValidState = s;
+				}
 			}
 
 			this.charNum++;
@@ -259,6 +250,8 @@ export class FSMTokenizer extends TokenizerBase {
 			if (c === '\n') {
 				this.lineNum++;
 				this.colNum = 1;
+			} else {
+				this.colNum++;
 			}
 		}
 
@@ -288,7 +281,6 @@ export class FSMTokenizer extends TokenizerBase {
 		this.charNum = lastValidCharNum + 1;
 		// TODO: Rewind lineNum and colNum too
 
-		// let tokenValue: TokenValueType = this.str.substring(firstValidCharNum, lastValidCharNum + 1);
 		let tokenValue: TokenValueType = this.str.substring(firstValidCharNum, this.charNum);
 
 		if (lastValidState === LexicalState.tokenIntLit) {
@@ -306,168 +298,5 @@ export class FSMTokenizer extends TokenizerBase {
 		}
 
 		return createToken(lastValidState, tokenValue, this.lineNum, firstValidCharNum + 1, false);
-
-		// this.sbToken = '';
-		//
-		// for (;;) {
-		// 	// Loop until valid token read
-		// 	let cSimplified = '';
-		//
-		// 	c = this.getChar();
-		//
-		// 	if (c.match(/[A-Za-z]/)) {
-		// 		cSimplified = 'A';
-		// 	} else if (c.match(/[0-9]/)) {
-		// 		cSimplified = '0';
-		// 	} else {
-		// 		cSimplified = c;
-		// 	}
-		//
-		// 	const possibleCompletedState = this.dictInternalStringStateToCompletedState.get(s);
-		// 	// const possibleCompletedStateIsAState = possibleCompletedState !== undefined;
-		// 	const possibleCompletedStateAsAState = possibleCompletedState as LexicalState;
-		//
-		// 	if (
-		// 		s !== LexicalState.stateStart &&
-		// 		(c === '\0' ||
-		// 			c === '\n' ||
-		// 			(c.match(/\s/) && typeof possibleCompletedState === 'undefined'))
-		// 	) {
-		// 		if (typeof possibleCompletedState !== 'undefined' && (c === '\0' || c === '\n')) {
-		// 			// Newline or EOF delimits string literal
-		// 			s = possibleCompletedStateAsAState;
-		// 		}
-		//
-		// 		if (c === '\n') {
-		// 			++this.charNum;
-		// 		}
-		//
-		// 		if (this.acceptableTokens.indexOf(s) >= 0) {
-		// 			// Valid token has been delimited by white space
-		// 			break;
-		// 		} else {
-		// 			// Error - try to recover
-		// 			s = LexicalState.stateError;
-		// 		}
-		// 	}
-		//
-		// 	let newState: LexicalState = s;
-		//
-		// 	if (s === LexicalState.stateStart && c === '\0') {
-		// 		newState = LexicalState.tokenEOF;
-		// 	} else if (s === LexicalState.stateStart && c === '\n') {
-		// 		++this.lineNum;
-		// 		this.colNum = 1;
-		// 		startCol = 1; // Don't buffer white space
-		// 		newState = s; // tokenStart;
-		// 	} else if (s === LexicalState.stateStart && c.match(/\s/)) {
-		// 		++startCol; // Don't buffer white space
-		// 		newState = s; // tokenStart;
-		// 	} else if (
-		// 		s === LexicalState.stateStart &&
-		// 		this.removeComments &&
-		// 		c === this.cCommentDelimiter
-		// 	) {
-		// 		for (;;) {
-		// 			++this.charNum;
-		// 			c = this.getChar();
-		//
-		// 			if (c === '\0') {
-		// 				newState = LexicalState.tokenEOF;
-		// 				break;
-		// 			} else if (c === '\n') {
-		// 				++this.lineNum;
-		// 				this.colNum = 1;
-		// 				startCol = 1; // Don't buffer white space
-		// 				newState = s; // tokenStart;
-		// 				break;
-		// 			}
-		// 		}
-		// 	} else if (c !== this.dictInternalStringStateToDelimiter.get(s)) {
-		// 		newState = s;
-		// 	} else {
-		// 		const key = makeTokenizerTableKey(s, cSimplified);
-		// 		const possibleNewState = this.table.get(key);
-		//
-		// 		if (typeof possibleNewState !== 'undefined') {
-		// 			newState = possibleNewState;
-		// 		} else {
-		// 			newState = LexicalState.stateError;
-		// 		}
-		// 	}
-		//
-		// 	s = newState;
-		//
-		// 	if (s === LexicalState.tokenEOF) {
-		// 		break;
-		// 	} else if (s === LexicalState.stateError) {
-		// 		s = this.recoverToken(stateList);
-		//
-		// 		if (s !== LexicalState.stateError) {
-		// 			const rewindAmount = this.colNum - (startCol + this.sbToken.length);
-		//
-		// 			this.charNum -= rewindAmount;
-		// 			this.colNum = startCol + this.sbToken.length;
-		// 			break; // Valid token recovered
-		// 		}
-		//
-		// 		throw new TokenizerException(
-		// 			`Lexical error at line ${this.lineNum}, column ${startCol}`,
-		// 			this.lineNum,
-		// 			startCol
-		// 		);
-		// 	} else {
-		// 		++this.charNum;
-		//
-		// 		if (c !== '\n') {
-		// 			++this.colNum;
-		// 		}
-		//
-		// 		if (s !== LexicalState.stateStart) {
-		// 			this.sbToken = this.sbToken + c;
-		// 			stateList.push(s);
-		// 		}
-		// 	}
-		// }
-		//
-		// const tokenStr = this.sbToken;
-		// let tokenValue: TokenValueType;
-		//
-		// switch (s) {
-		// 	case LexicalState.tokenIntLit:
-		// 		tokenValue = parseInt(tokenStr, 10);
-		// 		break;
-		//
-		// 	case LexicalState.tokenFltLit:
-		// 		tokenValue = parseFloat(tokenStr);
-		// 		break;
-		//
-		// 	case LexicalState.tokenStrLit:
-		// 		tokenValue = this.getStrLitFromTokenStr(this.cStringDelimiter);
-		// 		break;
-		//
-		// 	case LexicalState.tokenEOF:
-		// 		tokenValue = 'EOF';
-		// 		break;
-		//
-		// 	default:
-		// 		// tokenValue = ExtendedGetTokenValue(ref s, tokenStr); // TODO: Pass s by reference so that the Prolog interpreter can change it in the case of single-quoted strings -> identifiers.
-		//
-		// 		// if (tokenValue == null)
-		// 		// {
-		// 		// 	tokenValue = tokenStr.ToString();
-		// 		// }
-		//
-		// 		break;
-		// }
-		//
-		// const token = createToken(s, tokenValue, this.lineNum, startCol, false);
-		//
-		// if (c === '\n') {
-		// 	++this.lineNum;
-		// 	this.colNum = 1;
-		// }
-		//
-		// return token;
 	}
 }
