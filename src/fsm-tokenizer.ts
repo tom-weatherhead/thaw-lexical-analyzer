@@ -184,11 +184,13 @@ export class FSMTokenizer extends TokenizerBase {
 
 	protected getToken(): IToken {
 		// let c = ''; // A character read from getChar()
-		let firstValidCharNum = NaN; // this.charNum; // The column of the first char in a token
+		let firstValidCharNum = NaN; // The char num of the first character in a token
 		let s: LexicalState = LexicalState.stateStart; // Current state
 		// const stateList: LexicalState[] = [s]; // List of states corresponding to not-yet-accepted characters
 		let lastValidCharNum = NaN;
 		let lastValidState: LexicalState | undefined;
+		let lineNumToRewindTo = NaN;
+		let colNumToRewindTo = NaN;
 
 		for (;;) {
 			if (this.charNum >= this.str.length) {
@@ -211,6 +213,8 @@ export class FSMTokenizer extends TokenizerBase {
 				}
 
 				this.charNum = eol + 1;
+				this.lineNum++;
+				this.colNum = 1;
 				continue; // No token has started yet, so just skip the whitespace
 			}
 
@@ -256,6 +260,11 @@ export class FSMTokenizer extends TokenizerBase {
 			} else {
 				this.colNum++;
 			}
+
+			if (this.charNum === lastValidCharNum + 1) {
+				lineNumToRewindTo = this.lineNum;
+				colNumToRewindTo = this.colNum;
+			}
 		}
 
 		if (typeof lastValidState === 'undefined') {
@@ -282,7 +291,15 @@ export class FSMTokenizer extends TokenizerBase {
 
 		// Rewind charNum (the index into this.str)
 		this.charNum = lastValidCharNum + 1;
-		// TODO: Rewind lineNum and colNum too
+		// Rewind lineNum and colNum too
+		this.lineNum = lineNumToRewindTo;
+		this.colNum = colNumToRewindTo;
+
+		if (Number.isNaN(this.charNum) || Number.isNaN(this.lineNum) || Number.isNaN(this.colNum)) {
+			throw new TokenizerException(
+				`TokenizerException in fsm.getToken() after rewind: charNum is ${this.charNum}; lineNum is ${this.lineNum}; colNum is ${this.colNum}`
+			);
+		}
 
 		let tokenValue: TokenValueType = this.str.substring(firstValidCharNum, this.charNum);
 
