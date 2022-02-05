@@ -32,7 +32,7 @@ export class FSMTokenizer extends TokenizerBase {
 	private colNum = 1; // Current column number; one-based
 	private charNum = 0; // Current index into str; zero-based
 
-	// // private bool wasErr = false;   // Set to true if lexical error occurs
+	// private bool wasErr = false;   // Set to true if lexical error occurs
 
 	constructor(
 		options: {

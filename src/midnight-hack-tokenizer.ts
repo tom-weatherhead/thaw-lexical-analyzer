@@ -182,13 +182,17 @@ export class MidnightHackTokenizer extends TokenizerBase {
 				continue;
 			}
 
-			if (this.dictQuoteDelimiterToTokenType.has(c)) {
+			const quoteDelimiterTokenType = this.dictQuoteDelimiterToTokenType.get(c);
+
+			// if (this.dictQuoteDelimiterToTokenType.has(c)) {
+			if (typeof quoteDelimiterTokenType !== 'undefined') {
 				// Tokenize a 'quoted' entity
 				// I.e. a substring that is preceded and succeeded by the same
 				// delimiter character.
 				// E.g. a string: "string"
-				const tokenType = this.dictQuoteDelimiterToTokenType.get(c) as number;
 				const delimiter = c;
+
+				this.sbToken = '';
 
 				for (;;) {
 					if (this.charNum >= this.str.length) {
@@ -210,7 +214,7 @@ export class MidnightHackTokenizer extends TokenizerBase {
 						);
 					} else if (c === delimiter) {
 						return createToken(
-							tokenType,
+							quoteDelimiterTokenType,
 							this.sbToken,
 							this.lineNum,
 							startColNum,
@@ -251,8 +255,11 @@ export class MidnightHackTokenizer extends TokenizerBase {
 				}
 			}
 
-			if (this.dictCharToTokenType.has(c)) {
-				const tokenType = this.dictCharToTokenType.get(c) as number;
+			const tokenType = this.dictCharToTokenType.get(c);
+
+			// if (this.dictCharToTokenType.has(c)) {
+			if (typeof tokenType !== 'undefined') {
+				// const tokenType = this.dictCharToTokenType.get(c) as number;
 
 				if (this.markQuotedTokens) {
 					this.lastTokenWasASingleQuote = c === "'";

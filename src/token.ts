@@ -1,31 +1,19 @@
 // tom-weatherhead/thaw-lexical-analyzer/src/token.ts
 
-import { IToken, TokenValueType } from 'thaw-interpreter-types';
+import { IToken, LexicalState, TokenValueType } from 'thaw-interpreter-types';
 
 import { TokenizerException } from './tokenizer-exception';
 
 // export type TokenValueType = number | string | undefined;
 
 class Token implements IToken {
-	// public tokenType: number;
-	// public readonly tokenValue: TokenValueType;
-	// public readonly line: number;
-	// public readonly column: number;
-	// public readonly isQuoted: boolean;
-
 	constructor(
-		public tokenType: number,
+		public tokenType: LexicalState,
 		public readonly tokenValue: TokenValueType,
 		public readonly line: number,
 		public readonly column: number,
 		public readonly isQuoted: boolean /* = false */
-	) {
-		// this.tokenType = tt;
-		// this.tokenValue = tv;
-		// this.line = line;
-		// this.column = col;
-		// this.isQuoted = isQuoted;
-	}
+	) {}
 
 	public cloneWithNewLineNumber(line: number): IToken {
 		return new Token(this.tokenType, this.tokenValue, line, this.column, this.isQuoted);
@@ -46,7 +34,7 @@ class Token implements IToken {
 }
 
 export function createToken(
-	tokenType: number,
+	tokenType: LexicalState,
 	tokenValue: TokenValueType,
 	line: number,
 	column: number,
