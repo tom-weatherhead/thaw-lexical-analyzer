@@ -22,7 +22,8 @@ export class MidnightHackTokenizer extends TokenizerBase {
 	private lastTokenWasASingleQuote = false;
 	private quotedBracketDepth = 0;
 	private readonly dictQuoteDelimiterToTokenType = new Map<string, LexicalState>();
-	private commentDelimiter = ';';
+	private readonly commentDelimiter: string = ';';
+	private readonly escapeCharacter: string = '\\';
 
 	constructor(gs: LanguageSelector) {
 		super();
@@ -37,7 +38,7 @@ export class MidnightHackTokenizer extends TokenizerBase {
 			gs === LanguageSelector.SASL
 		) {
 			this.dictCharToTokenType.set("'", LexicalState.tokenApostrophe);
-			this.dictCharToTokenType.set('"', LexicalState.tokenStrLit);
+			this.dictQuoteDelimiterToTokenType.set('"', LexicalState.tokenStrLit);
 			this.markQuotedTokens = true;
 		}
 
@@ -54,7 +55,8 @@ export class MidnightHackTokenizer extends TokenizerBase {
 			// ThAW 2014/02/03 : We want to recognize $; a sample Smalltalk character literal is $a (see page 319).
 			this.dictCharToTokenType.set('$', LexicalState.tokenDollar);
 			// Use single quotes, not double quotes, as the string delimiter.  See the example string literal on page 319 of Kamin.
-			this.dictCharToTokenType.set("'", LexicalState.tokenStrLit);
+			// this.dictCharToTokenType.set("'", LexicalState.tokenStrLit);
+			this.dictQuoteDelimiterToTokenType.set("'", LexicalState.tokenStrLit);
 		}
 
 		if (gs === LanguageSelector.Prolog2) {
@@ -105,13 +107,16 @@ export class MidnightHackTokenizer extends TokenizerBase {
 		}
 
 		if (gs === LanguageSelector.Protos) {
-			this.commentDelimiter = '#';
-			this.dictCharToTokenType.set(',', LexicalState.tokenComma);
-			this.dictCharToTokenType.set(':', LexicalState.tokenColon);
-			this.dictCharToTokenType.set('[', LexicalState.tokenLeftSquareBracket);
-			this.dictCharToTokenType.set(']', LexicalState.tokenRightSquareBracket);
-			this.dictCharToTokenType.set('{', LexicalState.tokenLeftCurlyBrace);
-			this.dictCharToTokenType.set('}', LexicalState.tokenRightCurlyBrace);
+			throw new Error('The Midnight Hack tokenizer is not compatible with Protos.');
+			// this.commentDelimiter = '#';
+			// this.dictCharToTokenType.set(',', LexicalState.tokenComma);
+			// this.dictCharToTokenType.set(':', LexicalState.tokenColon);
+			// this.dictCharToTokenType.set('[', LexicalState.tokenLeftSquareBracket);
+			// this.dictCharToTokenType.set(']', LexicalState.tokenRightSquareBracket);
+			// this.dictCharToTokenType.set('{', LexicalState.tokenLeftCurlyBrace);
+			// this.dictCharToTokenType.set('}', LexicalState.tokenRightCurlyBrace);
+			// // Use single quotes, not double quotes, as the string delimiter.
+			// this.dictQuoteDelimiterToTokenType.set("'", LexicalState.tokenStrLit);
 		}
 	}
 
@@ -137,7 +142,6 @@ export class MidnightHackTokenizer extends TokenizerBase {
 				return createToken(LexicalState.tokenEOF, 'EOF', this.lineNum, startColNum, false);
 			}
 
-			// let cAsStr = this.str.Substring(this.charNum, 1);
 			let c = this.str[this.charNum++];
 			const cAsStr = c;
 
@@ -172,13 +176,17 @@ export class MidnightHackTokenizer extends TokenizerBase {
 				continue;
 			}
 
-			// if (char.IsWhiteSpace(c))
 			if (c.match(/\s/)) {
+				// I.e. if (char.IsWhiteSpace(c))
 				startColNum = this.colNum;
 				continue;
 			}
 
 			if (this.dictQuoteDelimiterToTokenType.has(c)) {
+				// Tokenize a 'quoted' entity
+				// I.e. a substring that is preceded and succeeded by the same
+				// delimiter character.
+				// E.g. a string: "string"
 				const tokenType = this.dictQuoteDelimiterToTokenType.get(c) as number;
 				const delimiter = c;
 
@@ -209,6 +217,35 @@ export class MidnightHackTokenizer extends TokenizerBase {
 							false
 						);
 					} else {
+						if (c === this.escapeCharacter) {
+							// Interpret the next character literally,
+							// even if it is a quote delimiter or a second escape character
+							// E.g. \" or \\
+
+							// **** BEGIN : A lot of code copied from above ****
+
+							if (this.charNum >= this.str.length) {
+								throw new TokenizerException(
+									'Quoted literal is not terminated before the end of the input.',
+									this.lineNum,
+									startColNum
+								);
+							}
+
+							c = this.str[this.charNum++];
+							++this.colNum;
+
+							if (c === '\n') {
+								throw new TokenizerException(
+									'Quoted literal is not terminated before the end of the line.',
+									this.lineNum,
+									startColNum
+								);
+							}
+
+							// **** END : A lot of code copied from above ****
+						}
+
 						this.sbToken = this.sbToken + c;
 					}
 				}
@@ -244,9 +281,9 @@ export class MidnightHackTokenizer extends TokenizerBase {
 
 				c = this.str[this.charNum];
 
-				// TODO 2014/04/03?  Should we also check dictQuoteDelimiterToTokenType.ContainsKey(c) ?
 				if (
 					this.dictCharToTokenType.has(c) ||
+					this.dictQuoteDelimiterToTokenType.has(c) ||
 					c === this.commentDelimiter ||
 					c === '\n' ||
 					c.match(/\s/)
