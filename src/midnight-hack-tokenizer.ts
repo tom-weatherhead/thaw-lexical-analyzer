@@ -184,7 +184,6 @@ export class MidnightHackTokenizer extends TokenizerBase {
 
 			const quoteDelimiterTokenType = this.dictQuoteDelimiterToTokenType.get(c);
 
-			// if (this.dictQuoteDelimiterToTokenType.has(c)) {
 			if (typeof quoteDelimiterTokenType !== 'undefined') {
 				// Tokenize a 'quoted' entity
 				// I.e. a substring that is preceded and succeeded by the same
@@ -220,47 +219,44 @@ export class MidnightHackTokenizer extends TokenizerBase {
 							startColNum,
 							false
 						);
-					} else {
-						if (c === this.escapeCharacter) {
-							// Interpret the next character literally,
-							// even if it is a quote delimiter or a second escape character
-							// E.g. \" or \\
+					}
 
-							// **** BEGIN : A lot of code copied from above ****
+					if (c === this.escapeCharacter) {
+						// Interpret the next character literally,
+						// even if it is a quote delimiter or a second escape character
+						// E.g. \" or \\
 
-							if (this.charNum >= this.str.length) {
-								throw new TokenizerException(
-									'Quoted literal is not terminated before the end of the input.',
-									this.lineNum,
-									startColNum
-								);
-							}
+						// **** BEGIN : A lot of code copied from above ****
 
-							c = this.str[this.charNum++];
-							++this.colNum;
-
-							if (c === '\n') {
-								throw new TokenizerException(
-									'Quoted literal is not terminated before the end of the line.',
-									this.lineNum,
-									startColNum
-								);
-							}
-
-							// **** END : A lot of code copied from above ****
+						if (this.charNum >= this.str.length) {
+							throw new TokenizerException(
+								'Quoted literal is not terminated before the end of the input.',
+								this.lineNum,
+								startColNum
+							);
 						}
 
-						this.sbToken = this.sbToken + c;
+						c = this.str[this.charNum++];
+						++this.colNum;
+
+						if (c === '\n') {
+							throw new TokenizerException(
+								'Quoted literal is not terminated before the end of the line.',
+								this.lineNum,
+								startColNum
+							);
+						}
+
+						// **** END : A lot of code copied from above ****
 					}
+
+					this.sbToken = this.sbToken + c;
 				}
 			}
 
 			const tokenType = this.dictCharToTokenType.get(c);
 
-			// if (this.dictCharToTokenType.has(c)) {
 			if (typeof tokenType !== 'undefined') {
-				// const tokenType = this.dictCharToTokenType.get(c) as number;
-
 				if (this.markQuotedTokens) {
 					this.lastTokenWasASingleQuote = c === "'";
 
