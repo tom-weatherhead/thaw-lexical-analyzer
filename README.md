@@ -5,6 +5,7 @@ Obligatory BadgeFest:
 
 [![apple][apple-badge-image]][apple-url]
 [![atom][atom-badge-image]][atom-url]
+[![circleci][circleci-badge-image]][circleci-url]
 [![codeclimate][codeclimate-badge-image]][codeclimate-url]
 [![git][git-badge-image]][git-url]
 [![github][github-badge-image]][github-url]
@@ -14,6 +15,7 @@ Obligatory BadgeFest:
 [![typescript][typescript-badge-image]][typescript-url]
 
 [![status][status-badge-image]][status-url]
+[![build status][build-status-badge-image]][build-status-url]
 [![npm version][npm-version-badge-image]][npm-version-url]
 [![latest tag][latest-tag-badge-image]][latest-tag-url]
 [![npm total downloads][npm-total-downloads-badge-image]][npm-total-downloads-url]
@@ -67,6 +69,8 @@ Obligatory BadgeFest:
 
 [status-badge-image]: https://badgen.net/github/status/tom-weatherhead/thaw-lexical-analyzer
 [status-url]: https://badgen.net/github/status/tom-weatherhead/thaw-lexical-analyzer
+[build-status-badge-image]: https://circleci.com/gh/tom-weatherhead/thaw-lexical-analyzer.svg?style=shield
+[build-status-url]: https://circleci.com/gh/tom-weatherhead/thaw-lexical-analyzer
 [npm-version-badge-image]: https://img.shields.io/npm/v/thaw-lexical-analyzer.svg
 [npm-version-url]: https://www.npmjs.com/package/thaw-lexical-analyzer
 [latest-tag-badge-image]: https://badgen.net/github/tag/tom-weatherhead/thaw-lexical-analyzer
